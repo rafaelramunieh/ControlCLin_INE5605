@@ -1,0 +1,13 @@
+# Pastas temporárias do Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+#IDE
+.vscode/
+.idea/
+
+# Arquivos do sistema operacional
+.DS_Store
+Thumbs.db
