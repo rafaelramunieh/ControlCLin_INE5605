@@ -2,7 +2,7 @@ from clinica import Clinica
 from paciente import Paciente
 from profissional import Profissional
 from data import Data
-from time import Time
+import time as Time
 
 class Atendimento():
     def __init__(self, clinica:Clinica, paciente:Paciente, profissional:Profissional, data:Data, horario_inicio:Time, horario_fim:Time, tipo:str, valor:float):
