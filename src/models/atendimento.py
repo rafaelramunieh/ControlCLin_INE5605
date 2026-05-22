@@ -1,11 +1,12 @@
+from tipo_atendimento import TipoAtendimento
 from clinica import Clinica
 from paciente import Paciente
 from profissional import Profissional
 from data import Data
-from time import Time
+from datetime import time as Time
 
 class Atendimento():
-    def __init__(self, clinica:Clinica, paciente:Paciente, profissional:Profissional, data:Data, horario_inicio:Time, horario_fim:Time, tipo:str, valor:float):
+    def __init__(self, clinica:Clinica, paciente:Paciente, profissional:Profissional, data:Data, horario_inicio:Time, horario_fim:Time, tipo:str, valor:float, tipoAtendimento:TipoAtendimento):
         self.__clinica = None
         if isinstance(clinica, Clinica):
             self.__clinica = clinica
@@ -30,6 +31,9 @@ class Atendimento():
         self.__valor = None
         if isinstance(valor, float):
             self.__valor = valor
+        self.__tipoAtendimento = None
+        if isinstance(tipoAtendimento, TipoAtendimento):
+            self.__tipoAtendimento = tipoAtendimento
     @property
     def clinica(self):
         return self.__clinica
@@ -86,4 +90,10 @@ class Atendimento():
     def valor(self, valor):
         if isinstance(valor, float):
             self.__valor = valor
-    
+    @property
+    def tipoAtendimento(self):
+        return self.__tipoAtendimento
+    @tipoAtendimento.setter
+    def tipoAtendimento(self, tipoAtendimento):
+        if isinstance(tipoAtendimento, TipoAtendimento):
+            self.__tipoAtendimento = tipoAtendimento
