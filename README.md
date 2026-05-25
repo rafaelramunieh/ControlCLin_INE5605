@@ -3,7 +3,7 @@
 Trabalho prático da disciplina de Desenvolvimento de Sistemas Orientados a Objetos I (UFSC).
 
 ## 👥 Equipe
-* Rafael carvalho de Souza Sadeq Ramunieh
+* Rafael Carvalho de Souza Sadeq Ramunieh
 * Vitor Fuziwara
 
 ## 🚀 Como rodar o projeto (toDo)
