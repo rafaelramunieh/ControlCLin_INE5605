@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+from atendimento import Atendimento
+from paciente import Paciente
 
 class Pagamento(ABC):
     def __init__(self, data:int, atendimento: Atendimento, paciente: Paciente, valor_pago: float):
@@ -22,9 +24,5 @@ class Pagamento(ABC):
     @property
     def valor_pago(self):
         return self.__valor_pago
-
-    @abstractmethod
-    def calcula_restante(self) -> float:
-        pass
     
     

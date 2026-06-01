@@ -13,7 +13,3 @@ class pagamentoCartaoCredito(Pagamento):
     @property
     def bandeira_cartao(self):
         return self.__bandeira_cartao
-    
-    def calcula_restante(self) -> float:
-        restante = self.atendimento.valor - self.valor_pago
-        return restante

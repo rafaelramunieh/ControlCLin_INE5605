@@ -6,7 +6,7 @@ from data import Data
 from datetime import time as Time
 
 class Atendimento():
-    def __init__(self, clinica:Clinica, paciente:Paciente, profissional:Profissional, data:Data, horario_inicio:Time, horario_fim:Time, tipo:str, valor:float, tipoAtendimento:TipoAtendimento):
+    def __init__(self, clinica:Clinica, paciente:Paciente, profissional:Profissional, data:Data, horario_inicio:Time, horario_fim:Time, valor:float, tipoAtendimento:TipoAtendimento):
         self.__clinica = None
         if isinstance(clinica, Clinica):
             self.__clinica = clinica
@@ -17,17 +17,14 @@ class Atendimento():
         if isinstance(profissional, Profissional):
             self.__profissional = profissional
         self.__data = None
-        if isinstance(data, str):
+        if isinstance(data, Data):
             self.__data = data
         self.__horario_inicio = None
-        if isinstance(horario_inicio, str):
+        if isinstance(horario_inicio, Time):
             self.__horario_inicio = horario_inicio
         self.__horario_fim = None
-        if isinstance(horario_fim, str):
+        if isinstance(horario_fim, Time):
             self.__horario_fim = horario_fim
-        self.__tipo = None
-        if isinstance(tipo, str):
-            self.__tipo = tipo
         self.__valor = None
         if isinstance(valor, float):
             self.__valor = valor

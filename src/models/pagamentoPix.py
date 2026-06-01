@@ -9,8 +9,4 @@ class PagamentoPix(Pagamento):
     def cpf_pagador(self):
         return self.__cpf_pagador
 
-    def calcular_restante(self) -> float:
-        restante = self.atendimento.valor - self.valor_pago
-        return restante
-
     
