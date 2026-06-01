@@ -4,6 +4,7 @@ from paciente import Paciente
 from profissional import Profissional
 from data import Data
 from datetime import time as Time
+from pagamento import Pagamento
 
 class Atendimento():
     def __init__(self, clinica:Clinica, paciente:Paciente, profissional:Profissional, data:Data, horario_inicio:Time, horario_fim:Time, valor:float, tipoAtendimento:TipoAtendimento):
@@ -31,6 +32,7 @@ class Atendimento():
         self.__tipoAtendimento = None
         if isinstance(tipoAtendimento, TipoAtendimento):
             self.__tipoAtendimento = tipoAtendimento
+        self.__pagamentos = []
     @property
     def clinica(self):
         return self.__clinica
@@ -94,3 +96,13 @@ class Atendimento():
     def tipoAtendimento(self, tipoAtendimento):
         if isinstance(tipoAtendimento, TipoAtendimento):
             self.__tipoAtendimento = tipoAtendimento
+    def adicionar_pagamento(self, pagamento: Pagamento):
+        if isinstance(pagamento, Pagamento):
+            self.__pagamentos.append(pagamento)
+    def calcula_restante(self) -> float:
+        if self.__valor is None:
+            return 0.0
+        total_pago = sum(pag.valor_pago for pag in self.__pagamentos)
+        restante = self.__valor - total_pago
+
+        return max(0.0, restante)
