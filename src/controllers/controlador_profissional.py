@@ -11,6 +11,24 @@ class ControladorProfissional:
     def profissionais(self):
         return self.__profissionais
 
+    def abrir_menu(self): 
+        while True:
+            opcao = self.__tela_profissional.mostra_menu_profissional()
+            if opcao == 1:
+                self.incluir_profissional()
+            elif opcao == 2:
+                self.listar_profissionais()
+            elif opcao == 3:
+                cpf = input("Digite o CPF do profissional a ser excluído: ")
+                self.excluir_profissional(cpf)
+            elif opcao == 4:
+                cpf = input("Digite o CPF do profissional a ser editado: ")
+                self.editar_profissional(cpf)
+            elif opcao == 5:
+                break
+            else:
+                print("Opção inválida. Tente novamente.")
+    
     def incluir_profissional(self):
         dados_profissional = self.__tela_profissional.pega_dados_profissional()
         profissional = Profissional(dados_profissional['nome'], dados_profissional['celular'], 
@@ -43,4 +61,7 @@ class ControladorProfissional:
                 print(f"Profissional com CPF {cpf} editado.")
                 return
         print(f"Profissional com CPF {cpf} não encontrado.")
+    
+    def listar_profissionais(self):
+        self.__tela_profissional.mostra_profissionais(self.__profissionais)
         
