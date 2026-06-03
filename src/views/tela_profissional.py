@@ -1,5 +1,4 @@
 from models.profissional import Profissional
-from controllers.controlador_profissional import ControladorProfissional
 
 class TelaProfissional:
     def __init__(self):
