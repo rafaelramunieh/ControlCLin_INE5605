@@ -60,4 +60,6 @@ class ControladorPaciente:
                 return
         print(f"Paciente com CPF {cpf} não encontrado.")
     
+    def listar_pacientes(self):
+        self.__tela_paciente.mostra_pacientes()
     
