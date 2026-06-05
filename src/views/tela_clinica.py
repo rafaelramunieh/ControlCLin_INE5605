@@ -3,7 +3,7 @@ from controllers.controlador_clinica import ControladorClinica
 
 class TelaClinica:
     def __init__(self):
-        pass
+        self.__controlador_clinica = ControladorClinica()
     
     def mostra_menu_clinica(self):
         print("1. Incluir clínica")
@@ -22,7 +22,8 @@ class TelaClinica:
         horario_fechamento = input("Digite o horário de fechamento da clínica: ")
         return {"nome": nome, "localizacao": localizacao, "descricao": descricao, "horario_abertura": horario_abertura, "horario_fechamento": horario_fechamento}
     
-    def mostra_clinicas(self, clinicas):
+    def mostra_clinicas(self):
+        clinicas = self.__controlador_clinica.clinicas
         print("---------- LISTA DE CLÍNICAS ----------")
         for clinica in clinicas:
             print("-" * 30)
