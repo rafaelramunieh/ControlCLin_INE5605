@@ -1,4 +1,4 @@
-class data():
+class Data:
     def __init__(self, dia: int, mes: int, ano: int):
         if not self.validar_data(dia, mes, ano):
             raise ValueError("Data inválida")
@@ -36,17 +36,17 @@ class data():
     def __str__(self):
         return f"{self.dia:02d}/{self.mes:02d}/{self.ano}"
 
-    def __lt__(self, other):
-        if self.ano != other.ano:
-            return self.ano < other.ano
-        if self.mes != other.mes:
-            return self.mes < other.mes
-        return self.dia < other.dia
+    def __lt__(self, other_data: 'Data') -> bool:
+        if self.ano != other_data.ano:
+            return self.ano < other_data.ano
+        if self.mes != other_data.mes:
+            return self.mes < other_data.mes
+        return self.dia < other_data.dia
 
-    def __eq__(self, other):
-        return (self.ano == other.ano and 
-        self.mes == other.mes and 
-        self.dia == other.dia)
+    def __eq__(self, other_data: 'Data') -> bool:
+        return (self.ano == other_data.ano and 
+        self.mes == other_data.mes and 
+        self.dia == other_data.dia)
     
-    def __le__(self, other):
-        return self.__lt__(other) or self.__eq__(other)
+    def __le__(self, other_data: 'Data'):
+        return self.__lt__(other_data) or self.__eq__(other_data)
