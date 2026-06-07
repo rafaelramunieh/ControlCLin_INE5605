@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
-from atendimento import Atendimento
-from paciente import Paciente
+from models.atendimento import Atendimento
+from models.paciente import Paciente
 
 class Pagamento(ABC):
     def __init__(self, data:int, atendimento: Atendimento, paciente: Paciente, valor_pago: float):

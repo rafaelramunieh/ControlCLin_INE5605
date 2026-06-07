@@ -1,4 +1,4 @@
-from pagamento import Pagamento
+from models.pagamento import Pagamento
 
 class PagamentoPix(Pagamento):
     def __init__(self, data, atendimento, paciente, valor_pago:float, cpf_pagador:str):
