@@ -38,7 +38,7 @@ class ControladorClinica:
     
     def buscar_clinica(self, nome):
         for clinica in self.__clinicas:
-            if clinica.nome == nome:
+            if clinica.nome.lower() == nome.lower():
                 return clinica
         return None
     
@@ -51,15 +51,15 @@ class ControladorClinica:
         print(f"Clínica com nome {nome} não encontrada.")
     
     def editar_clinica(self, nome):
-        for clinica in self.__clinicas:
-            if clinica.nome == nome:
-                dados_clinica = self.__tela_clinica.pega_dados_clinica()
-                clinica.localizacao = dados_clinica['localizacao']
-                clinica.descricao = dados_clinica['descricao']
-                clinica.horario_abertura = dados_clinica['horario_abertura']
-                clinica.horario_fechamento = dados_clinica['horario_fechamento']
-                print(f"Clínica com nome {nome} editada.")
-                return
+        clinica = self.buscar_clinica(nome)
+        if clinica:
+            dados_clinica = self.__tela_clinica.pega_dados_clinica()
+            clinica.localizacao = dados_clinica['localizacao']
+            clinica.descricao = dados_clinica['descricao']
+            clinica.horario_abertura = dados_clinica['horario_abertura']                
+            clinica.horario_fechamento = dados_clinica['horario_fechamento']
+            print(f"Clínica com nome {nome} editada.")
+            return
         print(f"Clínica com nome {nome} não encontrada.")
     
     def listar_clinicas(self):

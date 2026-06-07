@@ -52,14 +52,14 @@ class ControladorPaciente:
         print(f"Paciente com CPF {cpf} não encontrado.")
 
     def editar_paciente(self, cpf):
-        for paciente in self.__pacientes:
-            if paciente.cpf == cpf:
-                dados_paciente = self.__tela_paciente.pega_dados_paciente()
-                paciente.nome = dados_paciente['nome']
-                paciente.celular = dados_paciente['celular']
-                paciente.idade = dados_paciente['idade']
-                print(f"Paciente com CPF {cpf} editado.")
-                return
+        paciente = self.buscar_paciente(cpf)
+        if paciente:
+            dados_paciente = self.__tela_paciente.pega_dados_paciente()
+            paciente.nome = dados_paciente['nome']
+            paciente.celular = dados_paciente['celular']
+            paciente.idade = dados_paciente['idade']
+            print(f"Paciente com CPF {cpf} editado.")
+            return
         print(f"Paciente com CPF {cpf} não encontrado.")
 
     def listar_pacientes(self):

@@ -51,15 +51,15 @@ class ControladorProfissional:
         print(f"Profissional com CPF {cpf} não encontrado.")
     
     def editar_profissional(self, cpf):
-        for profissional in self.__profissionais:
-            if profissional.cpf == cpf:
-                dados_profissional = self.__tela_profissional.pega_dados_profissional()
-                profissional.nome = dados_profissional['nome']
-                profissional.celular = dados_profissional['celular']
-                profissional.especialidade = dados_profissional['especialidade']
-                profissional.registro_profissional = dados_profissional['registro_profissional']
-                print(f"Profissional com CPF {cpf} editado.")
-                return
+        profissional = self.buscar_profissional(cpf)
+        if profissional:
+            dados_profissional = self.__tela_profissional.pega_dados_profissional()
+            profissional.nome = dados_profissional['nome']
+            profissional.celular = dados_profissional['celular']
+            profissional.especialidade = dados_profissional['especialidade']
+            profissional.registro_profissional = dados_profissional['registro_profissional']
+            print(f"Profissional com CPF {cpf} editado.")
+            return
         print(f"Profissional com CPF {cpf} não encontrado.")
     
     def listar_profissionais(self):
