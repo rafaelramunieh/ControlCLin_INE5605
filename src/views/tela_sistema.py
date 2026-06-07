@@ -8,8 +8,9 @@ class TelaSistema:
         print("2. Profissionais")
         print("3. Pacientes")
         print("4. Atendimentos")
-        print("5. Pagamentos")
-        print("6. Relatórios")
+        print("5. Procedimentos")
+        print("6. Pagamentos")
+        print("7. Relatórios")
         print("0. Sair")
         try:
             return int(input("Escolha uma opção: "))

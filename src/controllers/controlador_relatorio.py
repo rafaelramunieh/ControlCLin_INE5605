@@ -22,6 +22,13 @@ class ControladorRelatorio:
             else:
                 print("Opção inválida. Tente novamente.")
 
+    def __get_procedimentos(self):
+        atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
+        procedimentos = []
+        for a in atendimentos:
+            procedimentos.extend(a.procedimentos)
+        return procedimentos
+
     def clinicas_mais_atendimentos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         if not atendimentos:
@@ -44,23 +51,18 @@ class ControladorRelatorio:
         self.__tela_relatorio.mostra_atendimentos_extremos(mais_caro, mais_barato)
 
     def procedimentos_mais_populares(self):
-        atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
-        contagem = {}
-        for a in atendimentos:
-            for p in a._Atendimento__procedimentos:
-                desc = p.descricao
-                contagem[desc] = contagem.get(desc, 0) + 1
-        if not contagem:
+        procedimentos = self.__get_procedimentos()
+        if not procedimentos:
             print("Nenhum procedimento registrado.")
             return
+        contagem = {}
+        for p in procedimentos:
+            contagem[p.descricao] = contagem.get(p.descricao, 0) + 1
         ranking = sorted(contagem.items(), key=lambda x: x[1], reverse=True)
         self.__tela_relatorio.mostra_ranking_procedimentos(ranking)
 
     def procedimentos_mais_caros_baratos(self):
-        atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
-        procedimentos = []
-        for a in atendimentos:
-            procedimentos.extend(a._Atendimento__procedimentos)
+        procedimentos = self.__get_procedimentos()
         if not procedimentos:
             print("Nenhum procedimento registrado.")
             return
