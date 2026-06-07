@@ -1,10 +1,10 @@
-from tipo_atendimento import TipoAtendimento
-from clinica import Clinica
-from paciente import Paciente
-from profissional import Profissional
-from data import Data
+from models.tipo_atendimento import TipoAtendimento
+from models.clinica import Clinica
+from models.paciente import Paciente
+from models.profissional import Profissional
+from models.data import Data
 from datetime import time as Time
-from pagamento import Pagamento
+from models.pagamento import Pagamento
 
 
 class Atendimento():

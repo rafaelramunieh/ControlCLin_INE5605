@@ -1,5 +1,5 @@
 from models.pagamento import Pagamento
-from models.pagamentoCartaoCredito import pagamentoCartaoCredito
+from models.pagamentoCartaoCredito import PagamentoCartaoCredito
 from models.pagamentoDinheiro import PagamentoDinheiro
 from models.pagamentoPix import PagamentoPix
 from views.tela_pagamento import TelaPagamento
@@ -75,7 +75,7 @@ class ControladorPagamento:
             )
 
         elif tipo_pagamento == 3:  # Cartão de Crédito
-            pagamento = pagamentoCartaoCredito(
+            pagamento = PagamentoCartaoCredito(
                 dados['data'],
                 atendimento,
                 paciente,
