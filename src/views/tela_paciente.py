@@ -1,8 +1,6 @@
-from models.paciente import Paciente
-from controllers.controlador_paciente import ControladorPaciente
 class TelaPaciente:
     def __init__(self):
-        self.__controlador_paciente = ControladorPaciente()
+        pass
     
     def mostra_menu_paciente(self):
         print("Menu Paciente:")
@@ -11,8 +9,11 @@ class TelaPaciente:
         print("3. Excluir paciente")
         print("4. Editar paciente")
         print("5. Voltar ao menu principal")
-        opcao = int(input("Escolha uma opção: "))
-        return opcao
+        try:
+            opcao = int(input("Escolha uma opção: "))
+            return opcao
+        except ValueError:
+            return 0
     
     def pega_dados_paciente(self):
         nome = input("Digite o nome do paciente: ")
@@ -21,9 +22,11 @@ class TelaPaciente:
         idade = int(input("Digite a idade do paciente: "))
         return {"nome": nome, "celular": celular, "cpf": cpf, "idade": idade}
     
-    def mostra_pacientes(self):
-        pacientes = self.__controlador_paciente.pacientes
+    def mostra_pacientes(self, pacientes):
         print("---------- LISTA DE PACIENTES ----------")
+        if not pacientes:
+            print("Nenhum paciente cadastrado.")
+            return
         for paciente in pacientes:
             print("-" * 30)
             print(f"Nome: {paciente.nome}, Celular: {paciente.celular}, CPF: {paciente.cpf}, Idade: {paciente.idade}")
