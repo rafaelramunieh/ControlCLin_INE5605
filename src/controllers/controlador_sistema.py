@@ -2,6 +2,7 @@ from controllers.controlador_clinica import ControladorClinica
 from controllers.controlador_profissional import ControladorProfissional
 from controllers.controlador_paciente import ControladorPaciente
 from controllers.controlador_atendimento import ControladorAtendimento
+from controllers.controlador_procedimento import ControladorProcedimento
 from controllers.controlador_pagamento import ControladorPagamento
 from controllers.controlador_relatorio import ControladorRelatorio
 from views.tela_sistema import TelaSistema
@@ -14,6 +15,7 @@ class ControladorSistema:
         self.__controlador_profissional = ControladorProfissional(self)
         self.__controlador_paciente = ControladorPaciente(self)
         self.__controlador_atendimento = ControladorAtendimento(self)
+        self.__controlador_procedimento = ControladorProcedimento(self)
         self.__controlador_pagamento = ControladorPagamento(self)
         self.__controlador_relatorio = ControladorRelatorio(self)
 
@@ -32,6 +34,10 @@ class ControladorSistema:
     @property
     def controlador_atendimento(self):
         return self.__controlador_atendimento
+
+    @property
+    def controlador_procedimento(self):
+        return self.__controlador_procedimento
 
     @property
     def controlador_pagamento(self):
@@ -53,8 +59,10 @@ class ControladorSistema:
             elif opcao == 4:
                 self.__controlador_atendimento.abrir_menu()
             elif opcao == 5:
-                self.__controlador_pagamento.abrir_menu()
+                self.__controlador_procedimento.abrir_menu()
             elif opcao == 6:
+                self.__controlador_pagamento.abrir_menu()
+            elif opcao == 7:
                 self.__controlador_relatorio.abrir_menu()
             elif opcao == 0:
                 self.__tela_sistema.mostra_mensagem_saida()
