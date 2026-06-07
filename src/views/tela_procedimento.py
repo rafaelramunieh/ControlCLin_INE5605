@@ -26,11 +26,6 @@ class TelaProcedimento:
         for i, a in enumerate(atendimentos, 1):
             print((f"{i}. {a.paciente.nome} | {a.tipoAtendimento.descricao} | {a.data}"))
 
-    def mostra_profissionais(self, profissionais):
-        print("\n--- PROFISSIONAIS ---")
-        for i, p in enumerate(profissionais, 1):
-            print(f"{i}. {p.nome} ({p.especialidade})")
- 
     def mostra_procedimentos(self, procedimentos):
         print("\n---------- LISTA DE PROCEDIMENTOS ----------")
         if not procedimentos:

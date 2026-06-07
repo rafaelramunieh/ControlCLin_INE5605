@@ -6,7 +6,7 @@ class ControladorProcedimento:
         self.__controlador_sistema = controlador_sistema
         self.__tela_procedimento = TelaProcedimento()
     
-    def abrir_menu_procedimento(self):
+    def abrir_menu(self):
         while True:
             opcao = self.__tela_procedimento.mostra_menu_procedimento()
             if opcao == 1:
@@ -34,14 +34,14 @@ class ControladorProcedimento:
         if not (0 <= indice < len(atendimentos)):
             print("[Erro] Número inválido")
             return
-        atendimento = atendimentos["indice"]
+        atendimento = atendimentos[indice]
 
         profissionais = self.__controlador_sistema.controlador_profissional.profissionais
         if not profissionais:
             print("Nenhumm profissional encontrado.")
             return
         
-        self.__tela_procedimento.mostra_profissionais(profissionais)
+        self.__controlador_sistema.controlador_profissional.listar_profissionais()
         try:
             indice_prof = int(input("Selecione o número do profissional responsável pelo procedimento: ")) - 1
         except ValueError:
