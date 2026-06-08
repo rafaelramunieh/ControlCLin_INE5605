@@ -1,10 +1,14 @@
+from datetime import datetime
 class Clinica():
     def __init__(self, nome: str, localizacao: str, descricao: str, horario_abertura: str, horario_fechamento: str):
         self.__nome = nome if isinstance(nome, str) else None
         self.__localizacao = localizacao if isinstance(localizacao, str) else None
         self.__descricao = descricao if isinstance(descricao, str) else None
-        self.__horario_abertura = horario_abertura if isinstance(horario_abertura, str) else None
-        self.__horario_fechamento = horario_fechamento if isinstance(horario_fechamento, str) else None
+        self.__horario_abertura = None  
+        self.__horario_fechamento = None  
+        self.horario_abertura = horario_abertura  # chama o setter
+        self.horario_fechamento = horario_fechamento  # chama o setter
+            
 
     @property
     def nome(self):
@@ -35,13 +39,19 @@ class Clinica():
         return self.__horario_abertura
     @horario_abertura.setter
     def horario_abertura(self, horario_abertura):
-        if isinstance(horario_abertura, str):
+        try:
+            datetime.strptime(horario_abertura, "%H:%M")
             self.__horario_abertura = horario_abertura
+        except ValueError:
+            print("Horário de abertura inválido. Use o formato HH:MM com valores reais.")
 
     @property
     def horario_fechamento(self):
         return self.__horario_fechamento
     @horario_fechamento.setter
     def horario_fechamento(self, horario_fechamento):
-        if isinstance(horario_fechamento, str):
+        try:
+            datetime.strptime(horario_fechamento, "%H:%M")
             self.__horario_fechamento = horario_fechamento
+        except ValueError:
+            print("Horário de fechamento inválido. Use o formato HH:MM com valores reais.")
