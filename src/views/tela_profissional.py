@@ -33,8 +33,8 @@ class TelaProfissional:
         if not profissionais:
             print("Nenhum profissional cadastrado.")
             return
-        for profissional in profissionais:
+        for i, profissional in enumerate(profissionais, 1):
             print("-" * 30)
-            print(f"Nome: {profissional.nome} | Celular: {profissional.celular} | "
-                  f"CPF: {profissional.cpf} | Especialidade: {profissional.especialidade} | "
-                  f"Registro: {profissional.registro_profissional}")
+            print(f"{i}. Nome: {profissional.nome} | Celular: {profissional.celular} | "
+                f"CPF: {profissional.cpf} | Especialidade: {profissional.especialidade} | "
+                f"Registro: {profissional.registro_profissional}")
