@@ -32,6 +32,17 @@ class ControladorPaciente:
 
     def incluir_paciente(self):
         dados_paciente = self.__tela_paciente.pega_dados_paciente()
+        
+        if not dados_paciente['nome'] or not dados_paciente['nome'].strip():
+            print("Nome não pode ser vazio.")
+            return
+        if not dados_paciente['cpf'] or not dados_paciente['cpf'].strip():
+            print("CPF não pode ser vazio.")
+            return
+        if self.buscar_paciente(dados_paciente['cpf']):
+            print("Já existe um paciente com esse CPF.")
+            return
+
         paciente = Paciente(dados_paciente['nome'], dados_paciente['celular'],
                             dados_paciente['cpf'], dados_paciente['idade'])
         self.__pacientes.append(paciente)
