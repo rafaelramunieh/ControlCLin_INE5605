@@ -19,8 +19,8 @@ class TelaClinica:
         nome = input("Digite o nome da clínica: ")
         localizacao = input("Digite a localização da clínica: ")
         descricao = input("Digite a descrição da clínica: ")
-        horario_abertura = input("Digite o horário de abertura da clínica: ")
-        horario_fechamento = input("Digite o horário de fechamento da clínica: ")
+        horario_abertura = input("Digite o horário de abertura da clínica: (Ex: 20:00)")
+        horario_fechamento = input("Digite o horário de fechamento da clínica: (Ex: 21:00)")
         return {"nome": nome, "localizacao": localizacao, "descricao": descricao, "horario_abertura": horario_abertura, "horario_fechamento": horario_fechamento}
     
     def mostra_clinicas(self, clinicas):
