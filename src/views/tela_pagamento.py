@@ -54,25 +54,27 @@ class TelaPagamento():
         if 0 <= indice < total:
             return indice
         else:
+            # Em vez de dar print direto aqui, o ideal na arquitetura do trabalho é retornar None
+            # e deixar o controlador avisar através do mostra_mensagem, mas manter assim não quebra o fluxo.
             print("Índice inválido")
+            return None
         
-    
     def mostra_pagamentos(self, pagamentos):
         print("---- LISTA DE PAGAMENTOS ----")
         if not pagamentos:
-            print("Não há nenhum pagamento para esse atendimento")
+            print("Não há nenhum pagamento registrado.")
             return
         
         for pagamento in pagamentos:
             print("-" * 40)
             print(f"Data: {pagamento.data}")
             print(f"Paciente: {pagamento.paciente.nome}")
-            print(f"Valor Pago: {pagamento.valor_pago}")
+            print(f"Valor Pago: R$ {pagamento.valor_pago:.2f}")
 
             if isinstance(pagamento, PagamentoCartaoCredito):
                 print(f"Pago com 'Cartão de Crédito'.")
                 print(f"Número do cartão: {pagamento.numero_cartao}")
-                print(f"Bandeira do car~tão: {pagamento.bandeira_cartao}")
+                print(f"Bandeira do cartão: {pagamento.bandeira_cartao}") # Corrigido "car~tão"
 
             elif isinstance(pagamento, PagamentoPix):
                 print(f"Pago com Pix")
@@ -80,3 +82,7 @@ class TelaPagamento():
             
             else:
                 print("Pago com Dinheiro")
+
+    def mostra_mensagem(self, mensagem: str):
+        """Método centralizado para exibir avisos, erros e mensagens de sucesso"""
+        print(mensagem)

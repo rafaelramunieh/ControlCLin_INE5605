@@ -3,17 +3,18 @@ from models.pagamentoCartaoCredito import PagamentoCartaoCredito
 from models.pagamentoDinheiro import PagamentoDinheiro
 from models.pagamentoPix import PagamentoPix
 from views.tela_pagamento import TelaPagamento
+from models.dao.pagamento_dao import PagamentoDAO
 
 
 class ControladorPagamento:
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
-        self.__pagamentos = []
+        self.__pagamento_dao = PagamentoDAO()
         self.__tela_pagamento = TelaPagamento()
 
     @property
     def pagamentos(self):
-        return self.__pagamentos
+        return self.__pagamento_dao.get_all()
 
     def abrir_menu(self):
         while True:
@@ -25,14 +26,13 @@ class ControladorPagamento:
             elif opcao == 3:
                 break
             else:
-                print("Opção inválida. Tente novamente.")
+                self.__tela_pagamento.mostra_mensagem("Opção inválida. Tente novamente.")
 
     def incluir_pagamento(self):
-        # Busca o atendimento pelo sistema
         controlador_atendimento = self.__controlador_sistema.controlador_atendimento
         atendimentos = controlador_atendimento.atendimentos
         if not atendimentos:
-            print("Nenhum atendimento cadastrado.")
+            self.__tela_pagamento.mostra_mensagem("Nenhum atendimento cadastrado.")
             return
 
         self.__tela_pagamento.mostra_atendimentos(atendimentos)
@@ -41,16 +41,15 @@ class ControladorPagamento:
             return
         atendimento = atendimentos[indice]
 
-        # Paciente já está no atendimento
         paciente = atendimento.paciente
 
         valor_restante = atendimento.calcula_restante()
         if valor_restante <= 0:
-            print("Este atendimento já está totalmente pago.")
+            self.__tela_pagamento.mostra_mensagem("Este atendimento já está totalmente pago.")
             return
 
-        print(f"Valor total do atendimento: R$ {atendimento.valor:.2f}")
-        print(f"Valor restante a pagar: R$ {valor_restante:.2f}")
+        self.__tela_pagamento.mostra_mensagem(f"Valor total do atendimento: R$ {atendimento.valor:.2f}")
+        self.__tela_pagamento.mostra_mensagem(f"Valor restante a pagar: R$ {valor_restante:.2f}")
 
         tipo_pagamento = self.__tela_pagamento.get_tipo_pagamento()
         dados = self.__tela_pagamento.get_dados_pagamento(tipo_pagamento)
@@ -85,17 +84,20 @@ class ControladorPagamento:
             )
 
         if pagamento:
-            self.__pagamentos.append(pagamento)
+            chave = id(pagamento) # Gera uma chave única temporária para o exemplo
+            self.__pagamento_dao.add(chave, pagamento)
+            
             atendimento.adicionar_pagamento(pagamento)
-            print("Pagamento registrado com sucesso!")
+            self.__tela_pagamento.mostra_mensagem("Pagamento registrado com sucesso!")
+            
             restante = atendimento.calcula_restante()
             if restante > 0:
-                print(f"Ainda resta R$ {restante:.2f} a pagar neste atendimento.")
+                self.__tela_pagamento.mostra_mensagem(f"Ainda resta R$ {restante:.2f} a pagar neste atendimento.")
             else:
-                print("Atendimento totalmente quitado.")
+                self.__tela_pagamento.mostra_mensagem("Atendimento totalmente quitado.")
 
     def buscar_pagamentos_por_atendimento(self, atendimento):
-        return [p for p in self.__pagamentos if p.atendimento == atendimento]
+        return [p for p in self.__pagamento_dao.get_all() if p.atendimento == atendimento]
 
     def listar_pagamentos(self):
-        self.__tela_pagamento.mostra_pagamentos(self.__pagamentos)
+        self.__tela_pagamento.mostra_pagamentos(self.__pagamento_dao.get_all())
