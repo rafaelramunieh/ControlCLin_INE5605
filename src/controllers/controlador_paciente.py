@@ -1,16 +1,17 @@
 from models.paciente import Paciente
 from views.tela_paciente import TelaPaciente
-
+from models.dao.paciente_dao import PacienteDAO
 
 class ControladorPaciente:
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
         self.__pacientes = []
         self.__tela_paciente = TelaPaciente()
+        self.__paciente_dao = PacienteDAO()
 
     @property
     def pacientes(self):
-        return self.__pacientes
+        return self.__paciente_dao.get_all()
 
     def abrir_menu(self):
         while True:
@@ -45,19 +46,17 @@ class ControladorPaciente:
 
         paciente = Paciente(dados_paciente['nome'], dados_paciente['celular'],
                             dados_paciente['cpf'], dados_paciente['idade'])
-        self.__pacientes.append(paciente)
+        self.__paciente_dao.add(dados_paciente['cpf'], paciente)
         print("Paciente cadastrado com sucesso!")
 
     def buscar_paciente(self, cpf):
-        for paciente in self.__pacientes:
-            if paciente.cpf == cpf:
-                return paciente
-        return None
+        return self.__paciente_dao.get(cpf)
+
 
     def excluir_paciente(self, cpf):
         paciente = self.buscar_paciente(cpf)
         if paciente:
-            self.__pacientes.remove(paciente)
+            self.__paciente_dao.delete(cpf)
             print(f"Paciente com CPF {cpf} excluído.")
             return
         print(f"Paciente com CPF {cpf} não encontrado.")
@@ -70,8 +69,10 @@ class ControladorPaciente:
             paciente.celular = dados_paciente['celular']
             paciente.idade = dados_paciente['idade']
             print(f"Paciente com CPF {cpf} editado.")
+            self.__paciente_dao.add(cpf, paciente)  # Atualiza o paciente no DAO
             return
         print(f"Paciente com CPF {cpf} não encontrado.")
 
     def listar_pacientes(self):
-        self.__tela_paciente.mostra_pacientes(self.__pacientes)
+        pacientes = self.__paciente_dao.get_all()
+        self.__tela_paciente.mostra_pacientes(pacientes)
