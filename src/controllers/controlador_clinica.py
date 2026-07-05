@@ -1,15 +1,17 @@
 from models.clinica import Clinica
 from views.tela_clinica import TelaClinica
+from models.dao.clinica_dao import ClinicaDAO
 
 class ControladorClinica:
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
         self.__clinicas = []
         self.__tela_clinica = TelaClinica()
+        self.__clinica_dao = ClinicaDAO()
 
     @property
     def clinicas(self):
-        return self.__clinicas
+        return self.__clinica_dao.get_all()
 
     def abrir_menu(self): 
         while True:
@@ -49,20 +51,17 @@ class ControladorClinica:
         if not clinica.horario_abertura or not clinica.horario_fechamento:
             print("Clínica não cadastrada devido a horário inválido.")
             return
-
-        self.__clinicas.append(clinica)
+        
+        self.__clinica_dao.add(dados_clinica['nome'], clinica)
         print("Clínica cadastrada com sucesso!")
     
     def buscar_clinica(self, nome):
-        for clinica in self.__clinicas:
-            if clinica.nome.lower() == nome.lower():
-                return clinica
-        return None
+        return self.__clinica_dao.get(nome)
     
     def excluir_clinica(self, nome):
         clinica = self.buscar_clinica(nome)
         if clinica:
-            self.__clinicas.remove(clinica)
+            self.__clinica_dao.remove(nome)
             print(f"Clínica '{nome}' excluída.")
             return
         print(f"Clínica '{nome}' não encontrada.")
@@ -84,6 +83,9 @@ class ControladorClinica:
         clinica.horario_abertura = dados_clinica['horario_abertura']                
         clinica.horario_fechamento = dados_clinica['horario_fechamento']
         print(f"Clínica '{nome}' editada com sucesso.")
+        
+        self.__clinica_dao.add(clinica.nome, clinica)
     
     def listar_clinicas(self):
-        self.__tela_clinica.mostra_clinicas(self.__clinicas)
+        clinicas = self.__clinica_dao.get_all()
+        self.__tela_clinica.mostra_clinicas(clinicas)
