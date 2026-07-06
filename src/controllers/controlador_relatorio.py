@@ -20,9 +20,10 @@ class ControladorRelatorio:
             elif opcao == 5:
                 break
             else:
-                print("Opção inválida. Tente novamente.")
+                self.__tela_relatorio.mostra_mensagem("Opção inválida. Tente novamente.")
 
     def __get_procedimentos(self):
+        # Busca dinamicamente os atendimentos salvos no DAO do Atendimento
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         procedimentos = []
         for a in atendimentos:
@@ -32,20 +33,23 @@ class ControladorRelatorio:
     def clinicas_mais_atendimentos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         if not atendimentos:
-            print("Nenhum atendimento registrado.")
+            self.__tela_relatorio.mostra_mensagem("Nenhum atendimento registrado.")
             return
+        
         contagem = {}
         for a in atendimentos:
             nome = a.clinica.nome
             contagem[nome] = contagem.get(nome, 0) + 1
+            
         ranking = sorted(contagem.items(), key=lambda x: x[1], reverse=True)
         self.__tela_relatorio.mostra_ranking_clinicas(ranking)
 
     def atendimentos_mais_caros_baratos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         if not atendimentos:
-            print("Nenhum atendimento registrado.")
+            self.__tela_relatorio.mostra_mensagem("Nenhum atendimento registrado.")
             return
+        
         mais_caro = max(atendimentos, key=lambda a: a.valor)
         mais_barato = min(atendimentos, key=lambda a: a.valor)
         self.__tela_relatorio.mostra_atendimentos_extremos(mais_caro, mais_barato)
@@ -53,19 +57,22 @@ class ControladorRelatorio:
     def procedimentos_mais_populares(self):
         procedimentos = self.__get_procedimentos()
         if not procedimentos:
-            print("Nenhum procedimento registrado.")
+            self.__tela_relatorio.mostra_mensagem("Nenhum procedimento registrado.")
             return
+        
         contagem = {}
         for p in procedimentos:
             contagem[p.descricao] = contagem.get(p.descricao, 0) + 1
+            
         ranking = sorted(contagem.items(), key=lambda x: x[1], reverse=True)
         self.__tela_relatorio.mostra_ranking_procedimentos(ranking)
 
     def procedimentos_mais_caros_baratos(self):
         procedimentos = self.__get_procedimentos()
         if not procedimentos:
-            print("Nenhum procedimento registrado.")
+            self.__tela_relatorio.mostra_mensagem("Nenhum procedimento registrado.")
             return
+        
         mais_caro = max(procedimentos, key=lambda p: p.custo)
         mais_barato = min(procedimentos, key=lambda p: p.custo)
         self.__tela_relatorio.mostra_procedimentos_extremos(mais_caro, mais_barato)
