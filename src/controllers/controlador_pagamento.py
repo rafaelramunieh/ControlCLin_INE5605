@@ -13,6 +13,11 @@ class ControladorPagamento:
         self.__tela_pagamento = TelaPagamento()
 
     @property
+    def pagamento_dao(self):
+        # Propriedade necessária para que o ControladorAtendimento acesse o DAO
+        return self.__pagamento_dao
+
+    @property
     def pagamentos(self):
         return self.__pagamento_dao.get_all()
 
@@ -23,36 +28,59 @@ class ControladorPagamento:
                 self.incluir_pagamento()
             elif opcao == 2:
                 self.listar_pagamentos()
-            elif opcao == 3:
+            elif opcao == 3 or opcao == 0:  # Trata o botão de fechar/voltar
                 break
             else:
                 self.__tela_pagamento.mostra_mensagem("Opção inválida. Tente novamente.")
 
     def incluir_pagamento(self):
         controlador_atendimento = self.__controlador_sistema.controlador_atendimento
-        atendimentos = controlador_atendimento.atendimentos
+        atendimentos = controlador_atendimento.atendimento_dao.get_all() # Busca direto do DAO de atendimentos
+        
         if not atendimentos:
             self.__tela_pagamento.mostra_mensagem("Nenhum atendimento cadastrado.")
             return
 
-        self.__tela_pagamento.mostra_atendimentos(atendimentos)
+        # Monta a lista cruzando os dados com o cálculo em tempo real lá do ControladorAtendimento
+        atendimentos_com_saldo = []
+        for a in atendimentos:
+            saldo_restante = controlador_atendimento.calcula_restante(a)
+            atendimentos_com_saldo.append((a, saldo_restante))
+
+        # Envia para a nova tela gráfica tratar a exibição elegante
+        self.__tela_pagamento.mostra_atendimentos(atendimentos_com_saldo)
+        
         indice = self.__tela_pagamento.get_indice_atendimento(len(atendimentos))
         if indice is None:
             return
+            
         atendimento = atendimentos[indice]
-
         paciente = atendimento.paciente
 
-        valor_restante = atendimento.calcula_restante()
+        # Calcula o valor restante usando a fonte dinâmica
+        valor_restante = controlador_atendimento.calcula_restante(atendimento)
         if valor_restante <= 0:
             self.__tela_pagamento.mostra_mensagem("Este atendimento já está totalmente pago.")
             return
 
-        self.__tela_pagamento.mostra_mensagem(f"Valor total do atendimento: R$ {atendimento.valor:.2f}")
-        self.__tela_pagamento.mostra_mensagem(f"Valor restante a pagar: R$ {valor_restante:.2f}")
+        self.__tela_pagamento.mostra_mensagem(
+            f"Valor total: R$ {atendimento.valor:.2f}\nValor restante a pagar: R$ {valor_restante:.2f}"
+        )
 
         tipo_pagamento = self.__tela_pagamento.get_tipo_pagamento()
+        if tipo_pagamento == 0 or tipo_pagamento is None:
+            return
+
         dados = self.__tela_pagamento.get_dados_pagamento(tipo_pagamento)
+        if not dados:
+            return
+
+        # Garante que o usuário não pague mais do que o que está devendo
+        if dados['valor_pago'] > valor_restante:
+            self.__tela_pagamento.mostra_mensagem(
+                f"Erro: O valor pago (R$ {dados['valor_pago']:.2f}) é maior do que o saldo restante (R$ {valor_restante:.2f})."
+            )
+            return
 
         pagamento = None
 
@@ -84,20 +112,22 @@ class ControladorPagamento:
             )
 
         if pagamento:
-            chave = id(pagamento) # Gera uma chave única temporária para o exemplo
+            # Substituído o id() temporário por uma string única combinando o código e o timestamp/contador interno se aplicável,
+            # mas mantendo o add estruturado para o DAO persistir no .pkl
+            chave = f"PAG_{atendimento.codigo}_{len(self.__pagamento_dao.get_all()) + 1}"
             self.__pagamento_dao.add(chave, pagamento)
             
-            atendimento.adicionar_pagamento(pagamento)
             self.__tela_pagamento.mostra_mensagem("Pagamento registrado com sucesso!")
             
-            restante = atendimento.calcula_restante()
-            if restante > 0:
-                self.__tela_pagamento.mostra_mensagem(f"Ainda resta R$ {restante:.2f} a pagar neste atendimento.")
+            # Recalcula dinamicamente após a inserção no arquivo
+            restante_final = controlador_atendimento.calcula_restante(atendimento)
+            if restante_final > 0:
+                self.__tela_pagamento.mostra_mensagem(f"Ainda resta R$ {restante_final:.2f} a pagar neste atendimento.")
             else:
-                self.__tela_pagamento.mostra_mensagem("Atendimento totalmente quitado.")
+                self.__tela_pagamento.mostra_mensagem("Atendimento totalmente quitado!")
 
     def buscar_pagamentos_por_atendimento(self, atendimento):
-        return [p for p in self.__pagamento_dao.get_all() if p.atendimento == atendimento]
+        return [p for p in self.__pagamento_dao.get_all() if p.atendimento.codigo == atendimento.codigo]
 
     def listar_pagamentos(self):
         self.__tela_pagamento.mostra_pagamentos(self.__pagamento_dao.get_all())

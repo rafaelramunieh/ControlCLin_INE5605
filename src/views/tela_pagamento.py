@@ -1,88 +1,140 @@
+import FreeSimpleGUI as sg
 from models.pagamentoCartaoCredito import PagamentoCartaoCredito
 from models.pagamentoDinheiro import PagamentoDinheiro
 from models.pagamentoPix import PagamentoPix
 
-class TelaPagamento():
+class TelaPagamento:
     def __init__(self):
-        pass
+        self.__janela = None
+        sg.theme('LightBlue3')
+        self.__fonte_titulo = ("Segoe UI", 18, "bold")
+        self.__fonte_label = ("Segoe UI", 12)
+        self.__fonte_botao = ("Segoe UI", 11, "bold")
 
     def mostra_menu_pagamento(self):
-        print("---- MENU PAGAMENTO ----")
-        print("1. Registrar Pagamento")
-        print("2. Listar Pagamentos")
-        print("3. Retornar ao menu principal")
-        opcao = int(input("Escolha uma opção: "))
-        return opcao
+        layout = [
+            [sg.VPush()],
+            [sg.Text("Gestão de Pagamentos", font=self.__fonte_titulo, text_color="#1a365d", pad=(0, 20))],
+            [sg.Button("Registrar Novo Pagamento", key=1, size=(30, 2), font=self.__fonte_botao, button_color=("#ffffff", "#2b6cb0"))],
+            [sg.Button("Listar Todos os Pagamentos", key=2, size=(30, 2), font=self.__fonte_botao, button_color=("#ffffff", "#2b6cb0"))],
+            [sg.Text("", pad=(0, 10))],
+            [sg.Button("Voltar ao Menu Principal", key=3, size=(20, 1), font=self.__fonte_label, button_color=("#718096", "#DAE9F5"), border_width=0)],
+            [sg.VPush()]
+        ]
+        
+        self.__janela = sg.Window("ControlClin - Pagamentos", layout, element_justification="center", finalize=True)
+        self.__janela.maximize()
+        
+        evento, _ = self.__janela.read()
+        self.__janela.close()
+        
+        return evento if evento is not None else 3
 
     def get_tipo_pagamento(self):
-        print("---- FORMA DE PAGAMENTO ----")
-        print("1. Dinheiro")
-        print("2. Pix")
-        print("3. Cartão de crédito")
-        opcao = int(input("Escolha uma opção: "))
-        return opcao
+        layout = [
+            [sg.VPush()],
+            [sg.Text("Selecione a Forma de Pagamento", font=self.__fonte_titulo, text_color="#1a365d", pad=(0, 20))],
+            [sg.Button("Dinheiro", key=1, size=(20, 2), font=self.__fonte_botao, button_color=("#ffffff", "#2f855a"))],
+            [sg.Button("Pix", key=2, size=(20, 2), font=self.__fonte_botao, button_color=("#ffffff", "#2c5282"))],
+            [sg.Button("Cartão de Crédito", key=3, size=(20, 2), font=self.__fonte_botao, button_color=("#ffffff", "#744210"))],
+            [sg.Button("Cancelar", key=0, size=(10, 1), pad=(0, 20), button_color=("#718096", "#DAE9F5"), border_width=0)],
+            [sg.VPush()]
+        ]
+        
+        janela = sg.Window("Forma de Pagamento", layout, element_justification="center", finalize=True)
+        janela.maximize()
+        evento, _ = janela.read()
+        janela.close()
+        return evento
 
     def get_dados_pagamento(self, tipo_pagamento):
-        data = input("Digite a data do pagamento (ex: 03/06/2026):")
-        valor_pago = float(input("Digite o valor pago: R$ "))
+        # Campos comuns
+        layout = [
+            [sg.Text("Dados do Pagamento", font=self.__fonte_titulo, pad=(0, 20))],
+            [sg.Text("Data (DD/MM/AAAA):", size=(18, 1)), sg.Input(key="data", size=(20, 1))],
+            [sg.Text("Valor Pago: R$", size=(18, 1)), sg.Input(key="valor", size=(20, 1))],
+        ]
 
-        dados = {"data": data, "valor_pago": valor_pago}
-
+        # Campos específicos
         if tipo_pagamento == 2: # Pix
-            cpf_pagador = input("Digite o CPF do pagador: ")
-            dados['cpf_pagador'] = cpf_pagador
+            layout.append([sg.Text("CPF do Pagador:", size=(18, 1)), sg.Input(key="cpf", size=(20, 1))])
+        elif tipo_pagamento == 3: # Cartão
+            layout.append([sg.Text("Número do Cartão:", size=(18, 1)), sg.Input(key="numero", size=(20, 1))])
+            layout.append([sg.Text("Bandeira:", size=(18, 1)), sg.Input(key="bandeira", size=(20, 1))])
 
-        elif tipo_pagamento == 3: # Cartão de crédito
-            numero_cartao = input("Digite o número do cartão: ")
-            bandeira_cartao = input("Digite a bandeira do cartão (Ex: Visa, Mastercard, etc.): ")
-            dados["numero_cartao"] =  numero_cartao
-            dados["bandeira_cartao"] = bandeira_cartao
+        layout.append([sg.Button("Confirmar", key="OK", pad=(0, 20), size=(15, 1)), sg.Button("Cancelar", key="Cancel")])
 
+        janela = sg.Window("Registrar Dados", layout, element_justification="center")
+        evento, valores = janela.read()
+        janela.close()
+
+        if evento != "OK":
+            return None
+
+        # Monta o dicionário de retorno
+        dados = {"data": valores["data"], "valor_pago": float(valores["valor"])}
+        if tipo_pagamento == 2:
+            dados['cpf_pagador'] = valores["cpf"]
+        elif tipo_pagamento == 3:
+            dados["numero_cartao"] = valores["numero"]
+            dados["bandeira_cartao"] = valores["bandeira"]
+        
         return dados
 
-    def mostra_atendimentos(self, atendimentos):
-        print("---- ATENDIMENTOS DISPONÍVEIS ----")
-        for i, atendimento in enumerate(atendimentos):
-            print(f"[{i}] Paciente: {atendimento.paciente.nome} | "
-                f"Profissional: {atendimento.profissional.nome} | "
-                f"Data: {atendimento.data} | "
-                f"Valor total: R$ {atendimento.valor:.2f} | "
-                f"Restante: R$ {atendimento.calcula_restante():.2f}")
-    
-    def get_indice_atendimento(self, total):
-        indice = int(input("Digite o número do atendimento: "))
-        if 0 <= indice < total:
-            return indice
-        else:
-            # Em vez de dar print direto aqui, o ideal na arquitetura do trabalho é retornar None
-            # e deixar o controlador avisar através do mostra_mensagem, mas manter assim não quebra o fluxo.
-            print("Índice inválido")
-            return None
-        
-    def mostra_pagamentos(self, pagamentos):
-        print("---- LISTA DE PAGAMENTOS ----")
-        if not pagamentos:
-            print("Não há nenhum pagamento registrado.")
+    def mostra_atendimentos(self, atendimentos_com_saldo):
+        if not atendimentos_com_saldo:
+            self.mostra_mensagem("Não há nenhum atendimento cadastrado.")
             return
+
+        listagem = "---------- ATENDIMENTOS DISPONÍVEIS ----------\n\n"
         
-        for pagamento in pagamentos:
-            print("-" * 40)
-            print(f"Data: {pagamento.data}")
-            print(f"Paciente: {pagamento.paciente.nome}")
-            print(f"Valor Pago: R$ {pagamento.valor_pago:.2f}")
+        for i, (a, restante) in enumerate(atendimentos_com_saldo):
+            listagem += f"[{i}] Paciente: {a.paciente.nome} | Restante: R$ {restante:.2f}\n"
+            listagem += f"    Serviço: {a.tipoAtendimento.value['descricao']} | Data: {a.data}\n"
+            listagem += "-" * 60 + "\n"
+        
+        sg.popup_scrolled(listagem, title="Atendimentos Disponíveis", size=(80, 20), font=("Courier New", 10))
 
-            if isinstance(pagamento, PagamentoCartaoCredito):
-                print(f"Pago com 'Cartão de Crédito'.")
-                print(f"Número do cartão: {pagamento.numero_cartao}")
-                print(f"Bandeira do cartão: {pagamento.bandeira_cartao}") # Corrigido "car~tão"
+    def get_indice_atendimento(self, total):
+        layout = [
+            [sg.Text("Informe o número [índice] do atendimento selecionado:", font=self.__fonte_label)],
+            [sg.Input(key="indice", size=(10, 1))],
+            [sg.Button("Confirmar", key="OK"), sg.Button("Cancelar", key="Cancel")]
+        ]
+        janela = sg.Window("Selecionar Atendimento", layout, element_justification="center")
+        evento, valores = janela.read()
+        janela.close()
 
-            elif isinstance(pagamento, PagamentoPix):
-                print(f"Pago com Pix")
-                print(f"CPF do pagador: {pagamento.cpf_pagador}")
+        if evento == "OK":
+            try:
+                indice = int(valores["indice"])
+                if 0 <= indice < total:
+                    return indice
+            except ValueError:
+                pass
+        
+        self.mostra_mensagem("Índice inválido ou operação cancelada.")
+        return None
+
+    def mostra_pagamentos(self, pagamentos):
+        if not pagamentos:
+            self.mostra_mensagem("Não há nenhum pagamento registrado.")
+            return
+
+        listagem = "---------- LISTA DE PAGAMENTOS ----------\n\n"
+        for p in pagamentos:
+            listagem += f"Data: {p.data} | Paciente: {p.paciente.nome}\n"
+            listagem += f"VALOR: R$ {p.valor_pago:.2f} | "
             
+            if isinstance(p, PagamentoCartaoCredito):
+                listagem += f"CARTÃO ({p.bandeira_cartao})\n"
+            elif isinstance(p, PagamentoPix):
+                listagem += f"PIX (Pagador: {p.cpf_pagador})\n"
             else:
-                print("Pago com Dinheiro")
+                listagem += "DINHEIRO\n"
+            listagem += "-" * 50 + "\n"
+
+        sg.popup_scrolled(listagem, title="Pagamentos Registrados", size=(80, 20), font=("Courier New", 10))
 
     def mostra_mensagem(self, mensagem: str):
-        """Método centralizado para exibir avisos, erros e mensagens de sucesso"""
-        print(mensagem)
+        sg.popup("Aviso", mensagem, font=self.__fonte_label, title="ControlClin")

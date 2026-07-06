@@ -117,7 +117,3 @@ class Atendimento():
 
     def adicionar_procedimento(self, procedimento):
         self.__procedimentos.append(procedimento)
-
-    def calcula_restante(self) -> float:
-        total_pago = sum(pag.valor_pago for pag in self.__pagamentos)
-        return max(0.0, self.valor - total_pago)
