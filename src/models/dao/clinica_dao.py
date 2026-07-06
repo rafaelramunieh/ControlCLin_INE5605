@@ -1,4 +1,4 @@
-from .abstract_dao import AbstractDAO
+from models.dao.abstract_dao import AbstractDAO
 
 class ClinicaDAO(AbstractDAO):
     def __init__(self):
