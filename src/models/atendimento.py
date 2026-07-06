@@ -8,8 +8,9 @@ from models.pagamento import Pagamento
 
 
 class Atendimento():
-    def __init__(self, clinica: Clinica, paciente: Paciente, profissional: Profissional,
+    def __init__(self, codigo:int, clinica: Clinica, paciente: Paciente, profissional: Profissional,
                  data: Data, horario_inicio: Time, horario_fim: Time, tipoAtendimento: TipoAtendimento):
+        self.__codigo = codigo
         self.__clinica = None
         if isinstance(clinica, Clinica):
             self.__clinica = clinica
@@ -33,6 +34,10 @@ class Atendimento():
             self.__tipoAtendimento = tipoAtendimento
         self.__pagamentos = []
         self.__procedimentos = []
+    
+    @property
+    def codigo(self):
+        return self.__codigo
 
     @property
     def clinica(self):
