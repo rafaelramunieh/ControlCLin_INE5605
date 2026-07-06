@@ -127,19 +127,46 @@ class TelaAtendimento:
             self.mostra_mensagem("Nenhum atendimento agendado.")
             return
 
-        texto_completo = "---------- LISTA DE ATENDIMENTOS ----------\n\n"
-        
-        for a, restante in atendimentos_com_saldo:
-            texto_completo += f"Atendimento CÓDIGO: {a.codigo}\n"
-            texto_completo += f"Data: {a.data} | Horário: {a.horario_inicio} às {a.horario_fim}\n"
-            texto_completo += f"Clínica: {a.clinica.nome if a.clinica else 'Não informada'}\n"
-            texto_completo += f"Paciente: {a.paciente.nome if a.paciente else 'Não informado'}\n"
-            texto_completo += f"Profissional: {a.profissional.nome if a.profissional else 'Não informado'}\n"
-            texto_completo += f"Tipo: {a.tipoAtendimento.value['descricao']} | Valor: R$ {a.valor:.2f}\n"
-            texto_completo += f"Restante a Pagar: R$ {restante:.2f}\n"
-            texto_completo += "-" * 55 + "\n"
+        cabecalhos = ["Código", "Data", "Horário", "Clínica", "Paciente", "Profissional", "Tipo", "Valor Total", "A Pagar"]
+        dados_tabela = []
 
-        sg.popup_scrolled(texto_completo, title="Lista de Atendimentos", size=(70, 20), font=("Courier New", 10))
+        for a, restante in atendimentos_com_saldo:
+            dados_tabela.append([
+                str(a.codigo),
+                str(a.data),
+                f"{a.horario_inicio} - {a.horario_fim}",
+                a.clinica.nome if a.clinica else "N/I",
+                a.paciente.nome if a.paciente else "N/I",
+                a.profissional.nome if a.profissional else "N/I",
+                str(a.tipoAtendimento.value['descricao']),
+                f"R$ {a.valor:.2f}",
+                f"R$ {restante:.2f}"
+            ])
+
+        layout = [
+            [sg.VPush()],
+            [sg.Text("Lista de Atendimentos Agendados", font=self.__fonte_titulo, text_color="#1a365d", pad=(0, 20))],
+            [sg.Table(
+                values=dados_tabela,
+                headings=cabecalhos,
+                auto_size_columns=True,
+                display_row_numbers=False,
+                justification="center",
+                num_rows=15,
+                alternating_row_color="#e2e8f0",
+                key="-TABELA-",
+                row_height=30,
+                font=("Segoe UI", 11)
+            )],
+            [sg.Text("", pad=(0, 10))],
+            [sg.Button("Voltar", key="voltar", size=(15, 1), font=self.__fonte_botao, button_color=("#ffffff", "#2c5282"))],
+            [sg.VPush()]
+        ]
+
+        self.__janela = sg.Window("ControlClin - Lista de Atendimentos", layout, element_justification="center", finalize=True)
+        self.__janela.maximize()
+        self.__janela.read()
+        self.__janela.close()
 
     def mostra_mensagem(self, mensagem: str):
         sg.popup("Aviso", mensagem, font=self.__fonte_label, title="ControlClin")
