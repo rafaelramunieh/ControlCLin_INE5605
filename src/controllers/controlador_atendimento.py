@@ -3,17 +3,18 @@ from models.atendimento import Atendimento
 from models.data import Data
 from models.tipo_atendimento import TipoAtendimento
 from views.tela_atendimento import TelaAtendimento
+from models.dao.atendimento_dao import AtendimentoDAO 
 
 
 class ControladorAtendimento:
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
-        self.__atendimentos = []
+        self.__atendimento_dao = AtendimentoDAO()  
         self.__tela_atendimento = TelaAtendimento()
 
     @property
     def atendimentos(self):
-        return self.__atendimentos
+        return self.__atendimento_dao.get_all() 
 
     def abrir_menu(self):
         while True:
@@ -27,29 +28,29 @@ class ControladorAtendimento:
             elif opcao == 4:
                 break
             else:
-                print("\n[Erro] Opção inválida! Tente novamente.")
+                self.__tela_atendimento.mostra_mensagem("Opção inválida! Tente novamente.")
 
     def incluir_atendimento(self):
-        clinica = self.__controlador_sistema.controlador_clinica.buscar_clinica(
-            input("\nNome da clínica: "))
+        nome_clinica = self.__tela_atendimento.pega_nome_clinica()
+        clinica = self.__controlador_sistema.controlador_clinica.buscar_clinica(nome_clinica)
         if not clinica:
-            print("\n[Erro] Clínica não encontrada no sistema!")
+            self.__tela_atendimento.mostra_mensagem("Clínica não encontrada no sistema!")
             return
 
-        paciente = self.__controlador_sistema.controlador_paciente.buscar_paciente(
-            input("CPF do paciente: "))
+        cpf_paciente = self.__tela_atendimento.pega_cpf_paciente()
+        paciente = self.__controlador_sistema.controlador_paciente.buscar_paciente(cpf_paciente)
         if not paciente:
-            print("\n[Erro] Paciente não encontrado no sistema!")
+            self.__tela_atendimento.mostra_mensagem("Paciente não encontrado no sistema!")
             return
 
         if paciente.idade < 18:
-            print("\n[Erro] Paciente menor de 18 anos não pode realizar atendimento de forma independente.")
+            self.__tela_atendimento.mostra_mensagem("Paciente menor de 18 anos não pode realizar atendimento de forma independente.")
             return
 
-        profissional = self.__controlador_sistema.controlador_profissional.buscar_profissional(
-            input("CPF do profissional: "))
+        cpf_profissional = self.__tela_atendimento.pega_cpf_profissional()
+        profissional = self.__controlador_sistema.controlador_profissional.buscar_profissional(cpf_profissional)
         if not profissional:
-            print("\n[Erro] Profissional não encontrado no sistema!")
+            self.__tela_atendimento.mostra_mensagem("Profissional não encontrado no sistema!")
             return
 
         tipo_atendimento = self.__tela_atendimento.pega_tipo_atendimento()
@@ -67,10 +68,15 @@ class ControladorAtendimento:
             horario_inicio = Time(h_ini, m_ini)
             horario_fim = Time(h_fim, m_fim)
         except (ValueError, TypeError):
-            print("\n[Erro] Dados de data ou horário inválidos.")
+            self.__tela_atendimento.mostra_mensagem("Dados de data ou horário inválidos.")
             return
 
+        # Lógica para gerar código auto-incremental seguro para o DAO
+        todos = self.__atendimento_dao.get_all()
+        proximo_codigo = max([a.codigo for a in todos]) + 1 if todos else 1
+
         atendimento = Atendimento(
+            codigo=proximo_codigo,
             clinica=clinica,
             paciente=paciente,
             profissional=profissional,
@@ -80,23 +86,27 @@ class ControladorAtendimento:
             tipoAtendimento=tipo_atendimento
         )
 
-        self.__atendimentos.append(atendimento)
-        print("\n[Sucesso] Atendimento agendado com sucesso!")
+        # Salva no arquivo de forma persistente
+        self.__atendimento_dao.add(atendimento.codigo, atendimento)
+        self.__tela_atendimento.mostra_mensagem("Atendimento agendado com sucesso!")
 
     def listar_atendimentos(self):
-        self.__tela_atendimento.mostra_atendimentos(self.__atendimentos)
+        self.__tela_atendimento.mostra_atendimentos(self.__atendimento_dao.get_all())
 
     def excluir_atendimento(self):
-        if not self.__atendimentos:
-            print("Nenhum atendimento cadastrado.")
+        todos_atendimentos = self.__atendimento_dao.get_all()
+        if not todos_atendimentos:
+            self.__tela_atendimento.mostra_mensagem("Nenhum atendimento cadastrado.")
             return
-        self.__tela_atendimento.mostra_atendimentos(self.__atendimentos)
-        try:
-            indice = int(input("\nDigite o número do atendimento que deseja excluir: ")) - 1
-            if 0 <= indice < len(self.__atendimentos):
-                removido = self.__atendimentos.pop(indice)
-                print(f"\nAtendimento do dia {removido.data} excluído.")
-            else:
-                print("\nNúmero inválido.")
-        except ValueError:
-            print("\nEntrada inválida.")
+            
+        self.__tela_atendimento.mostra_atendimentos(todos_atendimentos)
+        
+        # Pede o código único do atendimento via view para exclusão limpa no DAO
+        codigo_excluir = self.__tela_atendimento.pega_codigo_atendimento_excluir()
+        
+        atendimento_encontrado = self.__atendimento_dao.get(codigo_excluir)
+        if atendimento_encontrado:
+            self.__atendimento_dao.remove(codigo_excluir)
+            self.__tela_atendimento.mostra_mensagem(f"Atendimento do dia {atendimento_encontrado.data} excluído.")
+        else:
+            self.__tela_atendimento.mostra_mensagem("Código de atendimento inválido.")
