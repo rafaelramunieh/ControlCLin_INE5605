@@ -38,3 +38,12 @@ class TelaPaciente:
         for paciente in pacientes:
             print("-" * 30)
             print(f"Nome: {paciente.nome} | Celular: {paciente.celular} | CPF: {paciente.cpf} | Idade: {paciente.idade}")
+    
+    def pega_cpf(self, acao):
+        return input(f"Digite o CPF do paciente a ser {acao}: ")
+
+    def mostra_mensagem(self, mensagem):
+        print(mensagem)
+
+    def mostra_opcao_invalida(self):
+        print("Opção inválida. Tente novamente.")
