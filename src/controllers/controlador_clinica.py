@@ -73,18 +73,34 @@ class ControladorClinica:
             return
 
         dados_clinica = self.__tela_clinica.pega_dados_clinica()
+        if not dados_clinica:
+            return  # Caso o usuário clique em Cancelar na janela
+
+        if not dados_clinica['nome'] or not dados_clinica['nome'].strip():
+            self.__tela_clinica.mostra_mensagem("Nome não pode ser vazio.")
+            return
 
         if not dados_clinica['localizacao'] or not dados_clinica['localizacao'].strip():
             self.__tela_clinica.mostra_mensagem("Localização não pode ser vazia.")
             return
 
+        novo_nome = dados_clinica['nome']
+        if novo_nome != nome and self.buscar_clinica(novo_nome):
+            self.__tela_clinica.mostra_mensagem("Já existe uma clínica com esse novo nome.")
+            return
+
+        if novo_nome != nome:
+            self.__clinica_dao.remove(nome)
+
+        clinica.nome = novo_nome
         clinica.localizacao = dados_clinica['localizacao']
         clinica.descricao = dados_clinica['descricao']
         clinica.horario_abertura = dados_clinica['horario_abertura']                
         clinica.horario_fechamento = dados_clinica['horario_fechamento']
-        self.__tela_clinica.mostra_mensagem(f"Clínica '{nome}' editada com sucesso.")
         
         self.__clinica_dao.add(clinica.nome, clinica)
+        
+        self.__tela_clinica.mostra_mensagem(f"Clínica '{novo_nome}' editada com sucesso.")
     
     def listar_clinicas(self):
         clinicas = self.__clinica_dao.get_all()
