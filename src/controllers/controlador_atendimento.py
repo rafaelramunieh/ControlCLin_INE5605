@@ -27,47 +27,68 @@ class ControladorAtendimento:
             elif opcao == 4:
                 break
             else:
-                print("\n[Erro] Opção inválida! Tente novamente.")
+                self.__tela_atendimento.mostra_mensagem(f"\n[Erro] Opção inválida! Tente novamente.")
 
     def incluir_atendimento(self):
+
+        dados = self.__tela_atendimento.pega_dados_atendimento()
+
         clinica = self.__controlador_sistema.controlador_clinica.buscar_clinica(
-            input("\nNome da clínica: "))
+            dados["clinica_nome"]
+        )
+
         if not clinica:
-            print("\n[Erro] Clínica não encontrada no sistema!")
+            self.__tela_atendimento.mostra_mensagem(
+                "\n[Erro] Clínica não encontrada no sistema!"
+            )
             return
 
         paciente = self.__controlador_sistema.controlador_paciente.buscar_paciente(
-            input("CPF do paciente: "))
+            dados["paciente_cpf"]
+        )
+
         if not paciente:
-            print("\n[Erro] Paciente não encontrado no sistema!")
+            self.__tela_atendimento.mostra_mensagem(
+                "\n[Erro] Paciente não encontrado no sistema!"
+            )
             return
 
         if paciente.idade < 18:
-            print("\n[Erro] Paciente menor de 18 anos não pode realizar atendimento de forma independente.")
+            self.__tela_atendimento.mostra_mensagem(
+                "\n[Erro] Paciente menor de 18 anos não pode realizar atendimento."
+            )
             return
 
         profissional = self.__controlador_sistema.controlador_profissional.buscar_profissional(
-            input("CPF do profissional: "))
+            dados["profissional_cpf"]
+        )
+
         if not profissional:
-            print("\n[Erro] Profissional não encontrado no sistema!")
+            self.__tela_atendimento.mostra_mensagem(
+                "\n[Erro] Profissional não encontrado no sistema!"
+            )
             return
 
         tipo_atendimento = self.__tela_atendimento.pega_tipo_atendimento()
+
         if tipo_atendimento is None:
             return
 
-        dados = self.__tela_atendimento.pega_dados_atendimento()
-        if dados is None:
-            return
-
         try:
-            data = Data(dados['dia'], dados['mes'], dados['ano'])
-            h_ini, m_ini = map(int, dados['horario_inicio'].split(':'))
-            h_fim, m_fim = map(int, dados['horario_fim'].split(':'))
+            dia, mes, ano = map(int, dados["data"].split("/"))
+
+            data = Data(dia, mes, ano)
+
+            h_ini, m_ini = map(int, dados["horario_inicio"].split(":"))
+            h_fim, m_fim = map(int, dados["horario_fim"].split(":"))
+
             horario_inicio = Time(h_ini, m_ini)
             horario_fim = Time(h_fim, m_fim)
+
         except (ValueError, TypeError):
-            print("\n[Erro] Dados de data ou horário inválidos.")
+            self.__tela_atendimento.mostra_mensagem(
+                "\n[Erro] Data ou horário inválidos."
+            )
             return
 
         atendimento = Atendimento(
@@ -81,22 +102,25 @@ class ControladorAtendimento:
         )
 
         self.__atendimentos.append(atendimento)
-        print("\n[Sucesso] Atendimento agendado com sucesso!")
 
+        self.__tela_atendimento.mostra_mensagem(
+            "\n[Sucesso] Atendimento agendado com sucesso!"
+        )
+        
     def listar_atendimentos(self):
         self.__tela_atendimento.mostra_atendimentos(self.__atendimentos)
 
     def excluir_atendimento(self):
         if not self.__atendimentos:
-            print("Nenhum atendimento cadastrado.")
+            self.__tela_atendimento.mostra_mensagem(f"Nenhum atendimento cadastrado.")
             return
         self.__tela_atendimento.mostra_atendimentos(self.__atendimentos)
         try:
             indice = int(input("\nDigite o número do atendimento que deseja excluir: ")) - 1
             if 0 <= indice < len(self.__atendimentos):
                 removido = self.__atendimentos.pop(indice)
-                print(f"\nAtendimento do dia {removido.data} excluído.")
+                self.__tela_atendimento.mostra_mensagem(f"\nAtendimento do dia {removido.data} excluído.")
             else:
-                print("\nNúmero inválido.")
+                self.__tela_atendimento.mostra_mensagem(f"\nNúmero inválido.")
         except ValueError:
-            print("\nEntrada inválida.")
+            self.__tela_atendimento.mostra_mensagem(f"\nEntrada inválida.")

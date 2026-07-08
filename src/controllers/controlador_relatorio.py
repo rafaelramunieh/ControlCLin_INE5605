@@ -20,7 +20,7 @@ class ControladorRelatorio:
             elif opcao == 5:
                 break
             else:
-                print("Opção inválida. Tente novamente.")
+                self.__tela_relatorio.mostra_mensagem(f"Opção inválida. Tente novamente.")
 
     def __get_procedimentos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
@@ -32,7 +32,7 @@ class ControladorRelatorio:
     def clinicas_mais_atendimentos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         if not atendimentos:
-            print("Nenhum atendimento registrado.")
+            self.__tela_relatorio.mostra_mensagem(f"Nenhum atendimento registrado.")
             return
         contagem = {}
         for a in atendimentos:
@@ -44,7 +44,7 @@ class ControladorRelatorio:
     def atendimentos_mais_caros_baratos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         if not atendimentos:
-            print("Nenhum atendimento registrado.")
+            self.__tela_relatorio.mostra_mensagem(f"Nenhum atendimento registrado.")
             return
         mais_caro = max(atendimentos, key=lambda a: a.valor)
         mais_barato = min(atendimentos, key=lambda a: a.valor)
@@ -53,7 +53,7 @@ class ControladorRelatorio:
     def procedimentos_mais_populares(self):
         procedimentos = self.__get_procedimentos()
         if not procedimentos:
-            print("Nenhum procedimento registrado.")
+            self.__tela_relatorio.mostra_mensagem(f"Nenhum procedimento registrado.")
             return
         contagem = {}
         for p in procedimentos:
@@ -64,7 +64,7 @@ class ControladorRelatorio:
     def procedimentos_mais_caros_baratos(self):
         procedimentos = self.__get_procedimentos()
         if not procedimentos:
-            print("Nenhum procedimento registrado.")
+            self.__tela_relatorio.mostra_mensagem(f"Nenhum procedimento registrado.")
             return
         mais_caro = max(procedimentos, key=lambda p: p.custo)
         mais_barato = min(procedimentos, key=lambda p: p.custo)

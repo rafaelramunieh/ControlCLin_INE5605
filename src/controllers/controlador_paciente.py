@@ -16,38 +16,46 @@ class ControladorPaciente:
     def abrir_menu(self):
         while True:
             opcao = self.__tela_paciente.mostra_menu_paciente()
+            
             if opcao == 1:
                 self.incluir_paciente()
+                
             elif opcao == 2:
                 self.listar_pacientes()
+                
             elif opcao == 3:
-                cpf = input("Digite o CPF do paciente a ser excluído: ")
+                cpf = self.__tela_paciente.pega_cpf("excluído")
                 self.excluir_paciente(cpf)
+
             elif opcao == 4:
-                cpf = input("Digite o CPF do paciente a ser editado: ")
+                cpf = self.__tela_paciente.pega_cpf("editado")
                 self.editar_paciente(cpf)
+
             elif opcao == 5:
                 break
+
             else:
-                print("Opção inválida. Tente novamente.")
+                self.__tela_paciente.mostra_opcao_invalida()
+             
+
 
     def incluir_paciente(self):
         dados_paciente = self.__tela_paciente.pega_dados_paciente()
         
         if not dados_paciente['nome'] or not dados_paciente['nome'].strip():
-            print("Nome não pode ser vazio.")
+            self.__tela_paciente.mostra_mensagem("Nome não pode ser vazio.")
             return
         if not dados_paciente['cpf'] or not dados_paciente['cpf'].strip():
-            print("CPF não pode ser vazio.")
+            self.__tela_paciente.mostra_mensagem("CPF não pode ser vazio.")
             return
         if self.buscar_paciente(dados_paciente['cpf']):
-            print("Já existe um paciente com esse CPF.")
+            self.__tela_paciente.mostra_mensagem("Já existe um paciente com esse CPF.")
             return
 
         paciente = Paciente(dados_paciente['nome'], dados_paciente['celular'],
                             dados_paciente['cpf'], dados_paciente['idade'])
         self.__paciente_dao.add(dados_paciente['cpf'], paciente)
-        print("Paciente cadastrado com sucesso!")
+        self.__tela_paciente.mostra_mensagem("Paciente cadastrado com sucesso!")
 
     def buscar_paciente(self, cpf):
         return self.__paciente_dao.get(cpf)
@@ -57,9 +65,9 @@ class ControladorPaciente:
         paciente = self.buscar_paciente(cpf)
         if paciente:
             self.__paciente_dao.delete(cpf)
-            print(f"Paciente com CPF {cpf} excluído.")
+            self.__tela_paciente.mostra_mensagem(f"Paciente com CPF {cpf} excluído.")
             return
-        print(f"Paciente com CPF {cpf} não encontrado.")
+        self.__tela_paciente.mostra_mensagem(f"Paciente com CPF {cpf} não encontrado.")
 
     def editar_paciente(self, cpf):
         paciente = self.buscar_paciente(cpf)
@@ -68,10 +76,10 @@ class ControladorPaciente:
             paciente.nome = dados_paciente['nome']
             paciente.celular = dados_paciente['celular']
             paciente.idade = dados_paciente['idade']
-            print(f"Paciente com CPF {cpf} editado.")
+            self.__tela_paciente.mostra_mensagem(f"Paciente com CPF {cpf} editado.")
             self.__paciente_dao.add(cpf, paciente)  # Atualiza o paciente no DAO
             return
-        print(f"Paciente com CPF {cpf} não encontrado.")
+        self.__tela_paciente.mostra_mensagem(f"Paciente com CPF {cpf} não encontrado.")
 
     def listar_pacientes(self):
         pacientes = self.__paciente_dao.get_all()

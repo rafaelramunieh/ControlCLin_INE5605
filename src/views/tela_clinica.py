@@ -31,3 +31,12 @@ class TelaClinica:
         for clinica in clinicas:
             print("-" * 30)
             print(f"Nome: {clinica.nome}, Localização: {clinica.localizacao}, Descrição: {clinica.descricao}, Horário de Abertura: {clinica.horario_abertura}, Horário de Fechamento: {clinica.horario_fechamento}")
+    
+    def pega_nome_clinica(self, acao): 
+        return input(f"Digite o nome da clínica a ser {acao}: ")
+    
+    def mostra_mensagem(self, mensagem):
+        print(mensagem)
+    
+    def mostra_opcao_invalida(self):
+        self.mostra_mensagem("Opção inválida. Tente novamente.")

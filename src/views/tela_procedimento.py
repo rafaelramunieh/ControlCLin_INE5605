@@ -37,4 +37,6 @@ class TelaProcedimento:
             print(f"Procedimento: {proc.descricao}")
             print(f"Custo: R$ {proc.custo:.2f}")
             print(f"Profissional: {proc.profissional.nome}")
-        
+    
+    def mostra_mensagem(self, mensagem):
+        print(mensagem)

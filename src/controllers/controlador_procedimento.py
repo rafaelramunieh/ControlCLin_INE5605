@@ -16,40 +16,40 @@ class ControladorProcedimento:
             elif opcao == 3:
                 break
             else:
-                print(f"[Erro] Opção Inválida. Tente novamente.")
+                self.__tela_procedimento.mostra_mensagem(f"[Erro] Opção Inválida. Tente novamente.")
     
     def incluir_procedimento(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         if not atendimentos:
-            print(f"Nenhum atendimento cadastrado")
+            self.__tela_procedimento.mostra_mensagem(f"Nenhum atendimento cadastrado")
             return
         
         self.__tela_procedimento.mostra_atendimentos(atendimentos)
         try:
             indice = int(input("Selecione o número de atendimento")) - 1
         except ValueError:
-            print(f"[Erro] Entrada inválida.")
+            self.__tela_procedimento.mostra_mensagem(f"[Erro] Entrada inválida.")
             return
         
         if not (0 <= indice < len(atendimentos)):
-            print("[Erro] Número inválido")
+            self.__tela_procedimento.mostra_mensagem(f"[Erro] Número inválido")
             return
         atendimento = atendimentos[indice]
 
         profissionais = self.__controlador_sistema.controlador_profissional.profissionais
         if not profissionais:
-            print("Nenhumm profissional encontrado.")
+            self.__tela_procedimento.mostra_mensagem(f"Nenhumm profissional encontrado.")
             return
         
         self.__controlador_sistema.controlador_profissional.listar_profissionais()
         try:
             indice_prof = int(input("Selecione o número do profissional responsável pelo procedimento: ")) - 1
         except ValueError:
-            print("[Erro] Entrada inválida")
+            self.__tela_procedimento.mostra_mensagem(f"[Erro] Entrada inválida")
             return
         
         if not (0 <= indice_prof < len(profissionais)):
-            print("[Erro] Número invállido")
+            self.__tela_procedimento.mostra_mensagem(f"[Erro] Número inválido")
             return
         profissional = profissionais[indice_prof]
 
@@ -60,8 +60,8 @@ class ControladorProcedimento:
         
         procedimento = Procedimento(dados["descricao"], dados["custo"], profissional)
         atendimento.adicionar_procedimento(procedimento)
-        print(f"Procedimento cadastrado com sucesso!")
-        print(f"Novo valor do atendimento: R$ {atendimento.valor:.2f}")
+        self.__tela_procedimento.mostra_mensagem(f"Procedimento cadastrado com sucesso!")
+        self.__tela_procedimento.mostra_mensagem(f"Novo valor do atendimento: R$ {atendimento.valor:.2f}")
 
 
     def listar_procedimentos(self):

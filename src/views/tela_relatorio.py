@@ -34,3 +34,6 @@ class TelaRelatorio:
         print("\n---------- PROCEDIMENTOS ----------")
         print(f"Mais caro:   {mais_caro.descricao} | R$ {mais_caro.custo:.2f}")
         print(f"Mais barato: {mais_barato.descricao} | R$ {mais_barato.custo:.2f}")
+    
+    def mostra_mensagem(self, mensagem):
+        print(mensagem)

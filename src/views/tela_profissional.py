@@ -38,3 +38,12 @@ class TelaProfissional:
             print(f"{i}. Nome: {profissional.nome} | Celular: {profissional.celular} | "
                 f"CPF: {profissional.cpf} | Especialidade: {profissional.especialidade} | "
                 f"Registro: {profissional.registro_profissional}")
+        
+    def pega_cpf(self, acao):
+        return input(f"Digite o CPF do profissional a ser {acao}: ")
+
+    def mostra_mensagem(self, mensagem):
+        print(mensagem)
+
+    def mostra_opcao_invalida(self):
+        self.mostra_mensagem("Opção inválida. Tente novamente.")
