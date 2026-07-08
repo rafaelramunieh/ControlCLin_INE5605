@@ -16,20 +16,26 @@ class ControladorProfissional:
     def abrir_menu(self): 
         while True:
             opcao = self.__tela_profissional.mostra_menu_profissional()
+            
             if opcao == 1:
                 self.incluir_profissional()
+                
             elif opcao == 2:
                 self.listar_profissionais()
+                
             elif opcao == 3:
-                cpf = input("Digite o CPF do profissional a ser excluído: ")
+                cpf = self.__tela_profissional.pega_cpf("excluído")
                 self.excluir_profissional(cpf)
+
             elif opcao == 4:
-                cpf = input("Digite o CPF do profissional a ser editado: ")
+                cpf = self.__tela_profissional.pega_cpf("editado")
                 self.editar_profissional(cpf)
+
             elif opcao == 5:
                 break
+            
             else:
-                print("Opção inválida. Tente novamente.")
+                self.__tela_profissional.mostra_opcao_invalida()
     
     def incluir_profissional(self):
         dados_profissional = self.__tela_profissional.pega_dados_profissional()
@@ -45,22 +51,23 @@ class ControladorProfissional:
         profissional = self.buscar_profissional(cpf)
         if profissional:
             self.__profissional_dao.remove(cpf)
-            print(f"Profissional com CPF {cpf} excluído.")
-            return
-        print(f"Profissional com CPF {cpf} não encontrado.")
-    
+            self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} excluído.")
+        return self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} não encontrado.")
     def editar_profissional(self, cpf):
-        profissional = self.buscar_profissional(cpf)
+        profissional = self.buscar_profissional(cpf)    
         if profissional:
-            dados_profissional = self.__tela_profissional.pega_dados_profissional()
+            dados_profissional = self.__tela_profissional.pega_dados_profissional() 
+            
             profissional.nome = dados_profissional['nome']
             profissional.celular = dados_profissional['celular']
             profissional.especialidade = dados_profissional['especialidade']
             profissional.registro_profissional = dados_profissional['registro_profissional']
-            print(f"Profissional com CPF {cpf} editado.")
+            self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} editado com sucesso.")
+            
             self.__profissional_dao.add(cpf, profissional)  # Atualiza o profissional no DAO
             return
-        print(f"Profissional com CPF {cpf} não encontrado.")
+        
+        self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} não encontrado.")
     
     def listar_profissionais(self):
         self.__tela_profissional.mostra_profissionais(self.profissionais)

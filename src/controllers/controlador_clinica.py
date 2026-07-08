@@ -21,27 +21,27 @@ class ControladorClinica:
             elif opcao == 2:
                 self.listar_clinicas()
             elif opcao == 3:
-                nome = input("Digite o nome da clínica a ser excluída: ")
+                nome = self.__tela_clinica.pega_nome_clinica("excluída")
                 self.excluir_clinica(nome)
             elif opcao == 4:
-                nome = input("Digite o nome da clínica a ser editada: ")
+                nome = self.__tela_clinica.pega_nome_clinica("editada")
                 self.editar_clinica(nome)
             elif opcao == 5:
                 break
             else:
-                print("Opção inválida. Tente novamente.")
+                self.__tela_clinica.mostra_opcao_invalida()
     
     def incluir_clinica(self):
         dados_clinica = self.__tela_clinica.pega_dados_clinica()
 
         if not dados_clinica['nome'] or not dados_clinica['nome'].strip():
-            print("Nome não pode ser vazio.")
+            self.__tela_clinica.mostra_mensagem("Nome não pode ser vazio.")
             return
         if not dados_clinica['localizacao'] or not dados_clinica['localizacao'].strip():
-            print("Localização não pode ser vazia.")
+            self.__tela_clinica.mostra_mensagem("Localização não pode ser vazia.")
             return
         if self.buscar_clinica(dados_clinica['nome']):
-            print("Já existe uma clínica com esse nome.")
+            self.__tela_clinica.mostra_mensagem("Já existe uma clínica com esse nome.")
             return
 
         clinica = Clinica(dados_clinica['nome'], dados_clinica['localizacao'], 
@@ -49,12 +49,12 @@ class ControladorClinica:
                           dados_clinica['horario_fechamento'])
 
         if not clinica.horario_abertura or not clinica.horario_fechamento:
-            print("Clínica não cadastrada devido a horário inválido.")
+            self.__tela_clinica.mostra_mensagem("Clínica não cadastrada devido a horário inválido.")
             return
         
         self.__clinica_dao.add(dados_clinica['nome'], clinica)
-        print("Clínica cadastrada com sucesso!")
-    
+        self.__tela_clinica.mostra_mensagem("Clínica cadastrada com sucesso!")
+
     def buscar_clinica(self, nome):
         return self.__clinica_dao.get(nome)
     
@@ -62,27 +62,27 @@ class ControladorClinica:
         clinica = self.buscar_clinica(nome)
         if clinica:
             self.__clinica_dao.remove(nome)
-            print(f"Clínica '{nome}' excluída.")
+            self.__tela_clinica.mostra_mensagem(f"Clínica '{nome}' excluída.")
             return
-        print(f"Clínica '{nome}' não encontrada.")
+        self.__tela_clinica.mostra_mensagem(f"Clínica '{nome}' não encontrada.")
     
     def editar_clinica(self, nome):
         clinica = self.buscar_clinica(nome)
         if not clinica:
-            print(f"Clínica '{nome}' não encontrada.")
+            self.__tela_clinica.mostra_mensagem(f"Clínica '{nome}' não encontrada.")
             return
 
         dados_clinica = self.__tela_clinica.pega_dados_clinica()
 
         if not dados_clinica['localizacao'] or not dados_clinica['localizacao'].strip():
-            print("Localização não pode ser vazia.")
+            self.__tela_clinica.mostra_mensagem("Localização não pode ser vazia.")
             return
 
         clinica.localizacao = dados_clinica['localizacao']
         clinica.descricao = dados_clinica['descricao']
         clinica.horario_abertura = dados_clinica['horario_abertura']                
         clinica.horario_fechamento = dados_clinica['horario_fechamento']
-        print(f"Clínica '{nome}' editada com sucesso.")
+        self.__tela_clinica.mostra_mensagem(f"Clínica '{nome}' editada com sucesso.")
         
         self.__clinica_dao.add(clinica.nome, clinica)
     
