@@ -1,15 +1,17 @@
 from models.profissional import Profissional
 from views.tela_profissional import TelaProfissional
+from models.dao.profissional_dao import ProfissionalDAO
 
 class ControladorProfissional:
     def __init__(self, controlador_sistema):
         self.__controlador_sistema = controlador_sistema
         self.__profissionais = []
         self.__tela_profissional = TelaProfissional()
+        self.__profissional_dao = ProfissionalDAO()
 
     @property
     def profissionais(self):
-        return self.__profissionais
+        return self.__profissional_dao.get_all()
 
     def abrir_menu(self): 
         while True:
@@ -34,18 +36,15 @@ class ControladorProfissional:
         profissional = Profissional(dados_profissional['nome'], dados_profissional['celular'], 
                                     dados_profissional['cpf'], dados_profissional['especialidade'], 
                                     dados_profissional['registro_profissional'])
-        self.__profissionais.append(profissional)
+        self.__profissional_dao.add(dados_profissional['cpf'], profissional)
     
     def buscar_profissional(self, cpf):
-        for profissional in self.__profissionais:
-            if profissional.cpf == cpf:
-                return profissional
-        return None
+        return self.__profissional_dao.get(cpf)
     
     def excluir_profissional(self, cpf):
         profissional = self.buscar_profissional(cpf)
         if profissional:
-            self.__profissionais.remove(profissional)
+            self.__profissional_dao.remove(cpf)
             print(f"Profissional com CPF {cpf} excluído.")
             return
         print(f"Profissional com CPF {cpf} não encontrado.")
@@ -59,9 +58,10 @@ class ControladorProfissional:
             profissional.especialidade = dados_profissional['especialidade']
             profissional.registro_profissional = dados_profissional['registro_profissional']
             print(f"Profissional com CPF {cpf} editado.")
+            self.__profissional_dao.add(cpf, profissional)  # Atualiza o profissional no DAO
             return
         print(f"Profissional com CPF {cpf} não encontrado.")
     
     def listar_profissionais(self):
-        self.__tela_profissional.mostra_profissionais(self.__profissionais)
+        self.__tela_profissional.mostra_profissionais(self.profissionais)
         
