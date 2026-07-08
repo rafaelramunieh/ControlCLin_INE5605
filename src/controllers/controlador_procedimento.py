@@ -24,13 +24,12 @@ class ControladorProcedimento:
             self.__tela_procedimento.mostra_mensagem(f"Nenhum atendimento cadastrado")
             return
         
-        self.__tela_procedimento.mostra_atendimentos(atendimentos)
-        try:
-            indice = int(input("Selecione o número de atendimento")) - 1
-        except ValueError:
-            self.__tela_procedimento.mostra_mensagem(f"[Erro] Entrada inválida.")
+        # Agora a tela abre de forma gráfica para escolher o índice
+        indice_usuario = self.__tela_procedimento.mostra_atendimentos(atendimentos)
+        if indice_usuario == -1:
             return
-        
+            
+        indice = indice_usuario - 1
         if not (0 <= indice < len(atendimentos)):
             self.__tela_procedimento.mostra_mensagem(f"[Erro] Número inválido")
             return
@@ -38,12 +37,30 @@ class ControladorProcedimento:
 
         profissionais = self.__controlador_sistema.controlador_profissional.profissionais
         if not profissionais:
-            self.__tela_procedimento.mostra_mensagem(f"Nenhumm profissional encontrado.")
+            self.__tela_procedimento.mostra_mensagem(f"Nenhum profissional encontrado.")
             return
         
-        self.__controlador_sistema.controlador_profissional.listar_profissionais()
+        # Criamos uma janela rápida para selecionar o profissional graficamente pelo índice
+        import FreeSimpleGUI as sg
+        cabecalhos = ["Índice", "Nome", "Especialidade"]
+        dados_prof = [[str(i), p.nome, p.especialidade] for i, p in enumerate(profissionais, 1)]
+        
+        layout_prof = [
+            [sg.Text("Selecione o Profissional Responsável", font=("Segoe UI", 14, "bold"), text_color="#1a365d")],
+            [sg.Table(values=dados_prof, headings=cabecalhos, auto_size_columns=True, justification="center", num_rows=6, font=("Segoe UI", 11))],
+            [sg.Text("Digite o número do índice do profissional escolhido:"), sg.Input(key="idx", size=(10, 1))],
+            [sg.Button("Confirmar", key="OK"), sg.Button("Cancelar", key="Cancel")]
+        ]
+        
+        janela_prof = sg.Window("Selecionar Profissional", layout_prof, element_justification="center")
+        evento, valores = janela_prof.read()
+        janela_prof.close()
+        
+        if evento != "OK":
+            return
+            
         try:
-            indice_prof = int(input("Selecione o número do profissional responsável pelo procedimento: ")) - 1
+            indice_prof = int(valores["idx"]) - 1
         except ValueError:
             self.__tela_procedimento.mostra_mensagem(f"[Erro] Entrada inválida")
             return
@@ -63,7 +80,6 @@ class ControladorProcedimento:
         self.__tela_procedimento.mostra_mensagem(f"Procedimento cadastrado com sucesso!")
         self.__tela_procedimento.mostra_mensagem(f"Novo valor do atendimento: R$ {atendimento.valor:.2f}")
 
-
     def listar_procedimentos(self):
         atendimentos = self.__controlador_sistema.controlador_atendimento.atendimentos
         todos = []
@@ -71,6 +87,3 @@ class ControladorProcedimento:
             for p in a.procedimentos:
                 todos.append((a, p))
         self.__tela_procedimento.mostra_procedimentos(todos)
-
-
-
