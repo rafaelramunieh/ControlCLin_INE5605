@@ -18,6 +18,6 @@ class ClinicaDAO(AbstractDAO):
     def remove(self, nome):
         from models.clinica import Clinica
         clinica = super().get(nome)
-        if not isinstance(clinica, Clinica):
+        if clinica is not None and not isinstance(clinica, Clinica):
             raise TypeError("O objeto deve ser uma instância da classe Clinica.")
         super().remove(nome)
