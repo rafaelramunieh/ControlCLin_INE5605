@@ -39,6 +39,11 @@ class ControladorProfissional:
     
     def incluir_profissional(self):
         dados_profissional = self.__tela_profissional.pega_dados_profissional()
+        
+        # Correção para o botão Cancelar / Fechar janela
+        if dados_profissional is None:
+            return
+
         profissional = Profissional(dados_profissional['nome'], dados_profissional['celular'], 
                                     dados_profissional['cpf'], dados_profissional['especialidade'], 
                                     dados_profissional['registro_profissional'])
@@ -51,13 +56,18 @@ class ControladorProfissional:
         profissional = self.buscar_profissional(cpf)
         if profissional:
             self.__profissional_dao.remove(cpf)
-            self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} excluído.")
+            return self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} excluído.")
         return self.__tela_profissional.mostra_mensagem(f"Profissional com CPF {cpf} não encontrado.")
+
     def editar_profissional(self, cpf):
         profissional = self.buscar_profissional(cpf)    
         if profissional:
             dados_profissional = self.__tela_profissional.pega_dados_profissional() 
             
+            # Correção para o botão Cancelar / Fechar janela na edição
+            if dados_profissional is None:
+                return
+
             profissional.nome = dados_profissional['nome']
             profissional.celular = dados_profissional['celular']
             profissional.especialidade = dados_profissional['especialidade']
@@ -71,4 +81,3 @@ class ControladorProfissional:
     
     def listar_profissionais(self):
         self.__tela_profissional.mostra_profissionais(self.profissionais)
-        

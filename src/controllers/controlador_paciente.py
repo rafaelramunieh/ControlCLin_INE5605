@@ -37,11 +37,13 @@ class ControladorPaciente:
             else:
                 self.__tela_paciente.mostra_opcao_invalida()
              
-
-
     def incluir_paciente(self):
         dados_paciente = self.__tela_paciente.pega_dados_paciente()
         
+        # Correção para o botão Cancelar / Fechar janela
+        if dados_paciente is None:
+            return
+
         if not dados_paciente['nome'] or not dados_paciente['nome'].strip():
             self.__tela_paciente.mostra_mensagem("Nome não pode ser vazio.")
             return
@@ -60,7 +62,6 @@ class ControladorPaciente:
     def buscar_paciente(self, cpf):
         return self.__paciente_dao.get(cpf)
 
-
     def excluir_paciente(self, cpf):
         paciente = self.buscar_paciente(cpf)
         if paciente:
@@ -73,6 +74,11 @@ class ControladorPaciente:
         paciente = self.buscar_paciente(cpf)
         if paciente:
             dados_paciente = self.__tela_paciente.pega_dados_paciente()
+            
+            # Correção para o botão Cancelar / Fechar janela na edição
+            if dados_paciente is None:
+                return
+
             paciente.nome = dados_paciente['nome']
             paciente.celular = dados_paciente['celular']
             paciente.idade = dados_paciente['idade']

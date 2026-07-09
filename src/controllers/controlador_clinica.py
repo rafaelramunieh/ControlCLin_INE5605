@@ -34,6 +34,9 @@ class ControladorClinica:
     def incluir_clinica(self):
         dados_clinica = self.__tela_clinica.pega_dados_clinica()
 
+        if dados_clinica is None:
+            return
+
         if not dados_clinica['nome'] or not dados_clinica['nome'].strip():
             self.__tela_clinica.mostra_mensagem("Nome não pode ser vazio.")
             return
