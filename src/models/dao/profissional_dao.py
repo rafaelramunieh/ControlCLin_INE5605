@@ -18,6 +18,6 @@ class ProfissionalDAO(AbstractDAO):
     def remove(self, cpf):
         from models.profissional import Profissional
         profissional = super().get(cpf)
-        if not isinstance(profissional, Profissional):
+        if profissional is not None and not isinstance(profissional, Profissional):
             raise TypeError("O objeto deve ser uma instância da classe Profissional.")
         super().remove(cpf)

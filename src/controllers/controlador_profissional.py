@@ -44,10 +44,21 @@ class ControladorProfissional:
         if dados_profissional is None:
             return
 
+        if not dados_profissional['nome'] or not dados_profissional['nome'].strip():
+            self.__tela_profissional.mostra_mensagem("Nome não pode ser vazio.")
+            return
+        if not dados_profissional['cpf'] or not dados_profissional['cpf'].strip():
+            self.__tela_profissional.mostra_mensagem("CPF não pode ser vazio.")
+            return
+        if self.buscar_profissional(dados_profissional['cpf']):
+            self.__tela_profissional.mostra_mensagem("Já existe um profissional com esse CPF.")
+            return
+
         profissional = Profissional(dados_profissional['nome'], dados_profissional['celular'], 
                                     dados_profissional['cpf'], dados_profissional['especialidade'], 
                                     dados_profissional['registro_profissional'])
         self.__profissional_dao.add(dados_profissional['cpf'], profissional)
+        self.__tela_profissional.mostra_mensagem("Profissional cadastrado com sucesso!")
     
     def buscar_profissional(self, cpf):
         return self.__profissional_dao.get(cpf)

@@ -65,7 +65,7 @@ class ControladorPaciente:
     def excluir_paciente(self, cpf):
         paciente = self.buscar_paciente(cpf)
         if paciente:
-            self.__paciente_dao.delete(cpf)
+            self.__paciente_dao.remove(cpf)
             self.__tela_paciente.mostra_mensagem(f"Paciente com CPF {cpf} excluído.")
             return
         self.__tela_paciente.mostra_mensagem(f"Paciente com CPF {cpf} não encontrado.")
