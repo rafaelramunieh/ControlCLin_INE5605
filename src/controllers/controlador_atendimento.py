@@ -35,13 +35,48 @@ class ControladorAtendimento:
                 self.__tela_atendimento.mostra_mensagem("Opção inválida! Tente novamente.")
 
     def incluir_atendimento(self):
-        nome_clinica = self.__tela_atendimento.pega_nome_clinica()
-        clinica = self.__controlador_sistema.controlador_clinica.buscar_clinica(nome_clinica)
+        clinicas = self.__controlador_sistema.controlador_clinica.clinicas
+        pacientes = self.__controlador_sistema.controlador_paciente.pacientes
+        profissionais = self.__controlador_sistema.controlador_profissional.profissionais
+
+        if not clinicas:
+            self.__tela_atendimento.mostra_mensagem("Não há nenhuma clínica cadastrada no sistema.")
+            return
+        if not pacientes:
+            self.__tela_atendimento.mostra_mensagem("Não há nenhum paciente cadastrado no sistema.")
+            return
+        if not profissionais:
+            self.__tela_atendimento.mostra_mensagem("Não há nenhum profissional cadastrado no sistema.")
+            return
+
+        valores = self.__tela_atendimento.obter_dados_agendamento(clinicas, pacientes, profissionais)
+        if not valores:
+            return
+
+        if not valores["clinica"]:
+            self.__tela_atendimento.mostra_mensagem("Por favor, selecione uma clínica.")
+            return
+        if not valores["paciente"]:
+            self.__tela_atendimento.mostra_mensagem("Por favor, selecione um paciente.")
+            return
+        if not valores["profissional"]:
+            self.__tela_atendimento.mostra_mensagem("Por favor, selecione um profissional.")
+            return
+        if not valores["tipo"]:
+            self.__tela_atendimento.mostra_mensagem("Por favor, selecione o tipo de atendimento.")
+            return
+
+        clinica = self.__controlador_sistema.controlador_clinica.buscar_clinica(valores["clinica"])
         if not clinica:
             self.__tela_atendimento.mostra_mensagem("Clínica não encontrada no sistema!")
             return
 
-        cpf_paciente = self.__tela_atendimento.pega_cpf_paciente()
+        import re
+        match_pac = re.search(r"\(CPF:\s*([^\)]+)\)", valores["paciente"])
+        if not match_pac:
+            self.__tela_atendimento.mostra_mensagem("Seleção de paciente inválida!")
+            return
+        cpf_paciente = match_pac.group(1).strip()
         paciente = self.__controlador_sistema.controlador_paciente.buscar_paciente(cpf_paciente)
         if not paciente:
             self.__tela_atendimento.mostra_mensagem("Paciente não encontrado no sistema!")
@@ -51,36 +86,41 @@ class ControladorAtendimento:
             self.__tela_atendimento.mostra_mensagem("Paciente menor de 18 anos não pode realizar atendimento de forma independente.")
             return
 
-        cpf_profissional = self.__tela_atendimento.pega_cpf_profissional()
+        match_prof = re.search(r"\(CPF:\s*([^\)]+)\)", valores["profissional"])
+        if not match_prof:
+            self.__tela_atendimento.mostra_mensagem("Seleção de profissional inválida!")
+            return
+        cpf_profissional = match_prof.group(1).strip()
         profissional = self.__controlador_sistema.controlador_profissional.buscar_profissional(cpf_profissional)
         if not profissional:
             self.__tela_atendimento.mostra_mensagem("Profissional não encontrado no sistema!")
             return
 
-        tipo_atendimento = self.__tela_atendimento.pega_tipo_atendimento()
-        if tipo_atendimento is None:
-            return
-
-        dados = self.__tela_atendimento.pega_dados_atendimento()
-        if dados is None:
+        tipo_atendimento = None
+        for t in TipoAtendimento:
+            if t.value['descricao'] == valores["tipo"]:
+                tipo_atendimento = t
+                break
+        
+        if not tipo_atendimento:
+            self.__tela_atendimento.mostra_mensagem("Tipo de atendimento inválido.")
             return
 
         try:
-            # Converte pra int pra usar na classe data
-            dia_int = int(dados['dia'])
-            mes_int = int(dados['mes'])
-            ano_int = int(dados['ano'])
+            dia_int = int(valores['dia'])
+            mes_int = int(valores['mes'])
+            ano_int = int(valores['ano'])
             
             data = Data(dia_int, mes_int, ano_int)
             
-            h_ini, m_ini = map(int, dados['horario_inicio'].split(':'))
-            h_fim, m_fim = map(int, dados['horario_fim'].split(':'))
+            h_ini, m_ini = map(int, valores['h_ini'].split(':'))
+            h_fim, m_fim = map(int, valores['h_fim'].split(':'))
             horario_inicio = Time(h_ini, m_ini)
             horario_fim = Time(h_fim, m_fim)
             
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError, KeyError) as e:
             print(f"Erro na conversão/validação: {e}")
-            self.__tela_atendimento.mostra_mensagem("Dados de data ou horário inválidos.")
+            self.__tela_atendimento.mostra_mensagem("Dados de data ou horário inválidos. Certifique-se de preencher todos os campos e usar HH:MM para horários.")
             return
 
         todos = self.__atendimento_dao.get_all()
